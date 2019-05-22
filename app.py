@@ -2,6 +2,30 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
+# inclusao de classe geral de personal data
+from sqlalchemy.ext.declarative import declared_attr
+
+
+
+
+
+# class PersonalData ( object ):
+#
+#     @declared_attr
+#     def __tablename__ ( cls ):
+#         return cls . __name__ . lower ()
+#     #
+#     # __table_args__ = { 'mysql_engine' : 'InnoDB' }
+#     # __mapper_args__ = { 'always_refresh' : True }
+#
+#     personal_tag=  Column ( Integer )
+#
+
+
+
+
+
+
 Base=declarative_base()
 
 class Person (Base):
@@ -58,6 +82,11 @@ person = Person()
 person.id = 0
 person.name = "joao"
 person.email = "hotmail"
+
+#person.personal_tag=1
+
+
+
 
 session.add(person)
 session.commit()
