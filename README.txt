@@ -15,6 +15,9 @@ python app.py
 
 ######GIT#######
 
+ Colocar codigo estavel no master
 
-git push origin master- Colocar codigo estavel no master
+(no master)
+git merge dev
 
+git push
