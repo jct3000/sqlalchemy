@@ -11,26 +11,26 @@ from sqlalchemy.ext.declarative import declared_attr
 
 
 
-# class PersonalData ( object ):
-#
-#     @declared_attr
-#     def __tablename__ ( cls ):
-#         return cls . __name__ . lower ()
-#     #
-#     # __table_args__ = { 'mysql_engine' : 'InnoDB' }
-#     # __mapper_args__ = { 'always_refresh' : True }
-#
-#     personal_tag=  Column ( Integer )
-#
-#
-#     def __init__(self, *args, **kwargs):
-#         print("Personal_Data\n\n")
-#         self.personal_tag=1
-#         #Base.__init__(self, *args, **kwargs)
-#
-#     @orm.reconstructor
-#     def init_on_load(self):
-#         print("Carregado da DB")
+class PersonalData ( object ):
+
+    @declared_attr
+    def __tablename__ ( cls ):
+        return cls . __name__ . lower ()
+    #
+    # __table_args__ = { 'mysql_engine' : 'InnoDB' }
+    # __mapper_args__ = { 'always_refresh' : True }
+
+    personal_tag=  Column ( Integer )
+
+
+    def __init__(self, *args, **kwargs):
+        print("Personal_Data\n\n")
+        self.personal_tag=1
+        #Base.__init__(self, *args, **kwargs)
+
+    @orm.reconstructor
+    def init_on_load(self):
+        print("Carregado da DB")
 
 
 
@@ -49,7 +49,7 @@ class Person (Base, PersonalData ):
         return "<Person(name='%s', email='%s')>" % (self.name, self.email)
 
     def __init__(self, id, name, email):
-        #PersonalData.__init__(self)
+        PersonalData.__init__(self)                             #tirar isto daqui????
         self.id=id
         self.name=name
         self.email=email
