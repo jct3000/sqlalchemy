@@ -1,9 +1,11 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
+
+
 
 
 
@@ -20,15 +22,22 @@ from sqlalchemy.ext.declarative import declared_attr
 #
 #     personal_tag=  Column ( Integer )
 #
-
-
-
+#
+#     def __init__(self, *args, **kwargs):
+#         print("Personal_Data\n\n")
+#         self.personal_tag=1
+#         #Base.__init__(self, *args, **kwargs)
+#
+#     @orm.reconstructor
+#     def init_on_load(self):
+#         print("Carregado da DB")
 
 
 
 Base=declarative_base()
 
-class Person (Base):
+
+class Person (Base, PersonalData ):
     __tablename__ = 'person'
 
     id = Column('id', Integer, primary_key=True)
@@ -38,6 +47,14 @@ class Person (Base):
 
     def __repr__(self):
         return "<Person(name='%s', email='%s')>" % (self.name, self.email)
+
+    def __init__(self, id, name, email):
+        #PersonalData.__init__(self)
+        self.id=id
+        self.name=name
+        self.email=email
+
+
 
 
 
@@ -52,6 +69,10 @@ class Restaurant (Base):
     def __repr__(self):
         return "<Restaurant(name='%s', adress='%s')>" % (self.name, self.adress)
 
+    def __init__(self, id, name, adress):
+        self.id_r=id
+        self.name=name
+        self.adress=adress
 
 
 class Checkin(Base):
@@ -66,7 +87,12 @@ class Checkin(Base):
     def __repr__(self):
         return "<Checkin(description='%s', rating='%d')>" % (self.description, self.rating)
 
-
+    def __init__(self, id_c, id, id_r, description, rating):
+        self.id_c=id_c
+        self.id=id
+        self.id_r=id_r
+        self.description=description
+        self.rating=rating
 
 
 
@@ -78,10 +104,7 @@ Session = sessionmaker(bind=engine)                                             
 
 
 session= Session()
-person = Person()
-person.id = 0
-person.name = "joao"
-person.email = "hotmail"
+person = Person(0,"joao", "hotmail" )
 
 #person.personal_tag=1
 
@@ -91,25 +114,28 @@ person.email = "hotmail"
 session.add(person)
 session.commit()
 
+
+person = Person(1,"miguel", "gemail" )
+
+#person.personal_tag=1
+
+
+
+
+session.add(person)
+session.commit()
 # session.query(Person).filter(Person.id==0).delete()                           # Para apagar um objecto com querie
 # session.commit()                                                              # Para apagar um objecto com querie
 
 
-restaurant = Restaurant()
-restaurant.id_r = 1
-restaurant.name = "Dinner"
-restaurant.adress = "street"
+restaurant = Restaurant(1,"Dinner","street" )
+
 
 session.add(restaurant)
 session.commit()
 
 
-checkin = Checkin()
-checkin.id_c=0
-checkin.id_r = 1
-checkin.id=0
-checkin.description = "blabla"
-checkin.rating = 3
+checkin = Checkin(0,1 , 0 , "blabla", 3)
 
 session.add(checkin)
 session.commit()
@@ -119,7 +145,7 @@ session.close()
 
 
 #                                                                             #parte responsavel pelo teste de query
-#
+
 # session= Session()
 # persons = session.query(Person).all()
 # for person in persons:

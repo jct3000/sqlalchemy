@@ -1,11 +1,37 @@
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, orm
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 
+# inclusao de classe geral de personal data
+from sqlalchemy.ext.declarative import declared_attr
+
+
 Base = declarative_base()
 
-class Interval(Base):
+class PersonalData ( object ):
+
+    @declared_attr
+    def __tablename__ ( cls ):
+        return cls . __name__ . lower ()
+    #
+    # __table_args__ = { 'mysql_engine' : 'InnoDB' }
+    # __mapper_args__ = { 'always_refresh' : True }
+
+    personal_tag=  Column ( Integer )
+
+    @hybrid_property                                                        #prova a introducao de um metodo a partir de uma classe base
+    def length(self):
+        return self.end - self.start
+
+    def __init__(self):
+        print("Classe privada gerada\n\n")
+        self.personal_tag=1
+
+
+
+
+class Interval(PersonalData, Base):
     __tablename__ = 'interval'
 
     id = Column(Integer, primary_key=True)
@@ -13,12 +39,15 @@ class Interval(Base):
     end = Column(Integer, nullable=False)
 
     def __init__(self, start, end):
+        PersonalData.__init__(self)
         self.start = start
         self.end = end
+                                         #Flag de classe gerada
 
-    @hybrid_property
-    def length(self):
-        return self.end - self.start
+    # @orm.reconstructor                                                    #supostamente correr este codigo a seguir a cada new
+    # def init_on_load(self):
+    #     print("Classe privada gerada\n\n")
+
 
     @hybrid_method
     def contains(self, point):
