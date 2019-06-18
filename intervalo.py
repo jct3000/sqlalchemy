@@ -19,7 +19,7 @@ class PersonalData ( object ):
     # __mapper_args__ = { 'always_refresh' : True }
 
     personal_tag=  Column ( Integer )
-
+    
     @hybrid_property                                                        #prova a introducao de um metodo a partir de uma classe base
     def length(self):
         return self.end - self.start

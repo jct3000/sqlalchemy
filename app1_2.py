@@ -21,10 +21,14 @@ class PersonalData ( object ):
     # __mapper_args__ = { 'always_refresh' : True }
 
     personal_tag=  Column ( Integer )
-
+    lista=set()
 
     def __init__(self, *args, **kwargs):
-        print("Personal_Data\n\n")
+        print("\nPersonal_Data\n")
+        PersonalData.lista.add(self.__tablename__)
+        print("\n lista de classes privadas\n")
+        print(self.lista)
+        print("\n")
         self.personal_tag=1
         #Base.__init__(self, *args, **kwargs)
 
@@ -145,7 +149,7 @@ session.close()
 
 
 #                                                                             #parte responsavel pelo teste de query
-
+# Session = sessionmaker(bind=engine)
 # session= Session()
 # persons = session.query(Person).all()
 # for person in persons:
