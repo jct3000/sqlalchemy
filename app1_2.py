@@ -33,9 +33,16 @@ class PersonalData ( object ):
         #Base.__init__(self, *args, **kwargs)
 
     @orm.reconstructor
-    def init_on_load(self):
-        print("Carregado da DB")
+    def init_on_load(self):                                                     #printa sempre que for buscar algo a BD
+        print("\n\nCarregado da DB\n\n")
 
+    # def __getattribute__(self, name):                                         #printa todos os getters
+    #     print ("getting attribute %s" %name)
+    #     return object.__getattribute__(self, name)
+    #
+    # def __setattr__(self, name, val):                                         #printa todos os getters
+    #     print ("   setting attribute %s to %r" %(name, val))
+    #     return object.__setattr__(self, name, val)
 
 
 Base=declarative_base()
@@ -153,15 +160,15 @@ session.close()
 # session= Session()
 # persons = session.query(Person).all()
 # for person in persons:
-#     print ("\nPessoa com o nome %s id %d e email %s\n" %(person.name, person.id, person.email))
+#     print ("\n\nPessoa com o nome %s id %d e email %s\n" %(person.name, person.id, person.email))
 #
 # restaurants = session.query(Restaurant).all()
 # for restaurant in restaurants:
-#     print ("\nRestaurante com o nome %s id %d e a morada %s\n" %(restaurant.name, restaurant.id_r, restaurant.adress))
+#     print ("\n\nRestaurante com o nome %s id %d e a morada %s\n" %(restaurant.name, restaurant.id_r, restaurant.adress))
 #
 #                                                                               #last query erro
 # checkins = session.query(Checkin).all()
 # for checkin in checkins:
-#     print ("\ncheckin com o id %d da pessoa com id %d no restaurante de id %d Descricao %s e Qualificacao %d \n" %(checkin.id_c , checkin.id , checkin.id_r, checkin.description, checkin.rating))
+#     print ("\n\ncheckin com o id %d da pessoa com id %d no restaurante de id %d Descricao %s e Qualificacao %d \n" %(checkin.id_c , checkin.id , checkin.id_r, checkin.description, checkin.rating))
 #
 # session.close()

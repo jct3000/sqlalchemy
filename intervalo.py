@@ -19,7 +19,7 @@ class PersonalData ( object ):
     # __mapper_args__ = { 'always_refresh' : True }
 
     personal_tag=  Column ( Integer )
-    
+
     @hybrid_property                                                        #prova a introducao de um metodo a partir de uma classe base
     def length(self):
         return self.end - self.start
@@ -27,6 +27,40 @@ class PersonalData ( object ):
     def __init__(self):
         print("Classe privada gerada\n\n")
         self.personal_tag=1
+
+
+    # def __getattr__(self,name):                                               #Nao faz nda
+    #     attr = object.__getattr__(self, name)
+    #     if hasattr(attr, '__call__'):
+    #         def newfunc(*args, **kwargs):
+    #             print('before calling %s' %attr.__name__)
+    #             result = attr(*args, **kwargs)
+    #             print('done calling %s' %attr.__name__)
+    #             return result
+    #         return newfunc
+    #     else:
+    #         return attr
+
+
+
+
+    # def __getattr__(self, name):                                              #ERRO estranho
+    #     def method(*args):
+    #         print("tried to handle unknown method " + name)
+    #         if args:
+    #             print("it had arguments: " + str(args))
+    #     return method
+
+
+
+    def __getattribute__(self, name):
+        print "getting attribute %s" % name
+        return object.__getattribute__(self, name)
+
+    def __setattr__(self, name, val):
+        print "setting attribute %s to %r" % (name, val)
+        return object.__setattr__(self, name, val)
+
 
 
 
