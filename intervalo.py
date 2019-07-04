@@ -29,8 +29,8 @@ class PersonalData ( object ):
         self.personal_tag=1
 
 
-    # def __getattr__(self,name):                                               #Nao faz nda
-    #     attr = object.__getattr__(self, name)
+    # def __getattribute__(self,name):                                               #Nao faz nda  __getattr__ - apanha a referencia a um atributo de um objecto automatic caso n exista deixa passar
+    #     attr = object.__getattribute__(self, name)                                 #__getattribute__- tenta sempre apanhar a referencia assim se nao existir erro(por isso n funciona aqui)
     #     if hasattr(attr, '__call__'):
     #         def newfunc(*args, **kwargs):
     #             print('before calling %s' %attr.__name__)
@@ -53,13 +53,13 @@ class PersonalData ( object ):
 
 
 
-    def __getattribute__(self, name):
-        print "getting attribute %s" % name
-        return object.__getattribute__(self, name)
-
-    def __setattr__(self, name, val):
-        print "setting attribute %s to %r" % (name, val)
-        return object.__setattr__(self, name, val)
+    # def __getattribute__(self, name):
+    #     print "getting attribute %s" % name
+    #     return object.__getattribute__(self, name)
+    #
+    # def __setattr__(self, name, val):
+    #     print "setting attribute %s to %r" % (name, val)
+    #     return object.__setattr__(self, name, val)
 
 
 

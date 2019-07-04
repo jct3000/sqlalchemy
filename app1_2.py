@@ -1,7 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-
+from datetime import datetime
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -21,6 +21,11 @@ class PersonalData ( object ):
     # __mapper_args__ = { 'always_refresh' : True }
 
     personal_tag=  Column ( Integer )
+    goal= Column('goal', String )
+    data_owner= Column('data_owner', String)
+    categorie= Column('categorie', String)
+    data_source = Column('data_source', String)
+    created_date= Column(DateTime)
     lista=set()
 
     def __init__(self, *args, **kwargs):
@@ -28,8 +33,13 @@ class PersonalData ( object ):
         PersonalData.lista.add(self.__tablename__)
         print("\n lista de classes privadas\n")
         print(self.lista)
-        print("\n")
+        print("\n")                                                             #Inicializacoes
         self.personal_tag=1
+        self.goal="statistic"
+        self.categorie="External"
+        self.data_owner="DONO"
+        self.data_source="client"
+        self.created_date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
         #Base.__init__(self, *args, **kwargs)
 
     @orm.reconstructor
