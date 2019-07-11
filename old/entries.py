@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from mymodel import *
+
 
 Base=declarative_base()
 
@@ -54,14 +56,17 @@ Base.metadata.create_all(bind=engine)
 Session = sessionmaker(bind=engine)                                             #Parte responsavel pelos commits dos objectos para a DB
 
 
-session= Session()
-person = Person()
-person.id = 1
-person.name = "bruno"
-person.email = "hotmail2"
+adder()
+# session= Session()
+# person = Person()
+# person.id = 2
+# person.name = "bruno"
+# person.email = "hotmail2"
+#
+# session.add(person)
+# session.commit()
 
-session.add(person)
-session.commit()
+
 
 restaurant = Restaurant()
 restaurant.id_r = 0
@@ -88,7 +93,7 @@ session.close()
 session= Session()
 persons = session.query(Person).all()
 for person in persons:
-    print ("\nPessoa com o nome %s id %d e email %s\n" %(person.name, person.id, person.email))
+    print ("\nPessoa com o nome %s id %d e email %s   data  %s\n" %(person.name, person.id, person.email ))
 
 restaurants = session.query(Restaurant).all()
 for restaurant in restaurants:

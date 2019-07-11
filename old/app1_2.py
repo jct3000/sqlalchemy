@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from datetime import datetime
+from datetime import datetime, timedelta
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -21,25 +21,26 @@ class PersonalData ( object ):
     # __mapper_args__ = { 'always_refresh' : True }
 
     personal_tag=  Column ( Integer )
-    goal= Column('goal', String )
-    data_owner= Column('data_owner', String)
-    categorie= Column('categorie', String)
-    data_source = Column('data_source', String)
     created_date= Column(DateTime)
+    #meter na metatabela
     lista=set()
+    validade= Column ( Integer )
+
+
 
     def __init__(self, *args, **kwargs):
+        self.personal_tag=1
         print("\nPersonal_Data\n")
         PersonalData.lista.add(self.__tablename__)
         print("\n lista de classes privadas\n")
         print(self.lista)
         print("\n")                                                             #Inicializacoes
-        self.personal_tag=1
-        self.goal="statistic"
-        self.categorie="External"
-        self.data_owner="DONO"
-        self.data_source="client"
+        self.validade=180                                                       #validade em dias 6 meses
         self.created_date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
+        print("\n DATA\n")
+        print(self.created_date)
+        print(self.created_date+timedelta(days=self.validade))
+        print("\n FIM\n")
         #Base.__init__(self, *args, **kwargs)
 
     @orm.reconstructor
@@ -58,6 +59,29 @@ class PersonalData ( object ):
 Base=declarative_base()
 
 
+class Metatable (Base):
+    __tablename__ = 'metatable'
+    id_sec= Column('id_sec', Integer, primary_key=True)
+    goal= Column('goal', String )
+    data_owner= Column('data_owner', String)
+    categorie= Column('categorie', String)
+    data_source = Column('data_source', String)
+
+
+
+    def __init__(self):
+        self.goal="statistic"
+        self.categorie="External"
+        self.data_owner="DONO"
+        self.data_source="client"
+
+
+
+
+
+
+
+
 class Person (Base, PersonalData ):
     __tablename__ = 'person'
 
@@ -74,7 +98,6 @@ class Person (Base, PersonalData ):
         self.id=id
         self.name=name
         self.email=email
-
 
 
 
