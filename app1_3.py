@@ -215,6 +215,11 @@ session.add(checkin)
 session.commit()
 
 
+#Funcao de update de um valor o synchronize_session pode ter o valor 'evaluate'
+# session.query(Restaurant).filter(Restaurant.adress == "street").update({Restaurant.adress: "street2"}, synchronize_session=False)
+# session.commit()
+
+
 session.close()
 
 

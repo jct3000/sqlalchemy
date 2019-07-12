@@ -178,14 +178,26 @@ def limpa(value):
     session= Session()
     for data in session.query(Metatable.validade).filter(Metatable.l_pessoal==value.__tablename__):
         prazo=data.validade
-        print("\n\n\n\n TESTE VALIDADE   %s\n\n\n"%(data.validade))
-    date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
+        print("\n\n\n\n TESTE VALIDADE   %s\n\n\n"%(prazo))
+    date=datetime.now().replace(microsecond=0)
 
-    for data in session.query(value).filter((value.created_date+timedelta(days=prazo))<date):
-        print("\n\n\n\n TESTE DATAS  %s\n\n\n"%(data.created_date))
 
-    session.query(value).filter((value.created_date+timedelta(days=prazo))>date).delete()
+
+    # Debbug das datas e etc apagar
+    # for data in session.query(value).filter((value.created_date+timedelta(days=prazo))<=date):
+    #     print("\n\n\n\n TESTE DATAS  %s\n\n\n"%(data.created_date))
+    #     cenas=data.created_date+timedelta(days=prazo)
+    #     print("\n\n\n\n TESTE DATAS2  %s\n\n\n"%(cenas))
+    #     session.query(value).filter(cenas>date).delete()
+    #     print("\n\n\n\n TESTE expressao  %r\n\n\n"%(cenas<date))
+
+    session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).delete()
     session.commit()
+
+
+
+
+
 
 # avisa se algum valor da metatabela se encontra por preencher
 def alerta_vazio():
