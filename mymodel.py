@@ -167,7 +167,7 @@ def uniadder(value):
         session.add(data)
         session.commit()
     except:
-        print("Dados ja guardados")
+        print("iniadder:Dados ja guardados")
 
 
 
@@ -178,7 +178,7 @@ def limpa(value):
     session= Session()
     for data in session.query(Metatable.validade).filter(Metatable.l_pessoal==value.__tablename__):
         prazo=data.validade
-        print("\n\n\n\n TESTE VALIDADE   %s\n\n\n"%(prazo))
+        print("limpa:\n\n\n\n TESTE VALIDADE   %s\n\n\n"%(prazo))
     date=datetime.now().replace(microsecond=0)
 
 
@@ -197,6 +197,33 @@ def limpa(value):
 
 
 
+#Muda a validade na metatabela de uma determinada classe pessoal para o valor dado em dias
+def change_val(class1, value):
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    session.query(Metatable).filter(Metatable.l_pessoal== class1.__tablename__).update({Metatable.validade: value}, synchronize_session=False)
+    print("\n\n change_val: VAlidade modificada para %d"%(value))
+    session.commit()
+
+
+
+
+
+
+
+#print se a classe dada for privada erro: nao diz se a classe e publica
+def is_private(class1):
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    for data in session.query(Metatable).filter(Metatable.l_pessoal==class1.__tablename__):
+        print("\n\n\n\n is_private:CLASSE PRIVADA   \n\n\n")
+    session.commit()
+
+
+
+
+
+
 
 
 # avisa se algum valor da metatabela se encontra por preencher
@@ -204,15 +231,15 @@ def alerta_vazio():
     Session = sessionmaker(bind=engine)
     session= Session()
     for data in session.query(Metatable).filter(Metatable.goal == None):
-        print("\n\n\nWarning: goal of set %s is empty\n\n\n"%(data.l_pessoal))
+        print("\n\n\nalerta_vazio Warning: goal of set %s is empty\n\n\n"%(data.l_pessoal))
     for data in session.query(Metatable).filter(Metatable.categorie == None):
-        print("\n\n\nWarning: categorie of set %s is empty\n\n\n"%(data.l_pessoal))
+        print("\n\n\nalerta_vazio Warning: categorie of set %s is empty\n\n\n"%(data.l_pessoal))
     for data in session.query(Metatable).filter(Metatable.data_owner == None):
-        print("\n\n\nWarning: data_owner of set %s is empty\n\n\n"%(data.l_pessoal))
+        print("\n\n\nalerta_vazio Warning: data_owner of set %s is empty\n\n\n"%(data.l_pessoal))
     for data in session.query(Metatable).filter(Metatable.data_source == None):
-        print("\n\n\nWarning: data_source of set %s is empty\n\n\n"%(data.l_pessoal))
+        print("\n\n\nalerta_vazio Warning: data_source of set %s is empty\n\n\n"%(data.l_pessoal))
     for data in session.query(Metatable).filter(Metatable.validade == None):
-        print("\n\n\nWarning: validade of set %s is empty\n\n\n"%(data.l_pessoal))
+        print("\n\n\nalerta_vazio Warning: validade of set %s is empty\n\n\n"%(data.l_pessoal))
         print("TESTE DE ALERTA")
     session.commit()
 
@@ -221,8 +248,6 @@ def adder():
     Session = sessionmaker(bind=engine)
     session= Session()
     person = Person(2,"bruno", "hotmail2")
-
-
     session.add(person)
     session.commit()
-    #print("Added one person\n")
+    #print("adder:Added one person\n")

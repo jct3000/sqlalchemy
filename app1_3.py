@@ -231,8 +231,11 @@ limpa(Person)
 
 alerta_vazio()
 
+change_val(Person,146)
 
-
+is_private(Person)
+is_private(Restaurant)
+is_private(Checkin)
                                                                             #parte responsavel pelo teste de query
 Session = sessionmaker(bind=engine)
 session= Session()
