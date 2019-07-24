@@ -6,97 +6,15 @@ from datetime import datetime, timedelta
 from sqlalchemy.ext.declarative import declared_attr
 
 
-from mymodel import *
+from PersonalVerLib import *
+
+
 
 engine = create_engine('sqlite:///user.db', echo=True)                         # ('sqlite:///:memory:', echo=True)   --- coloca a BD em memoria  se mudar para algo tipo user.db cria em file na dir
-Base.metadata.create_all(bind=engine)
 
 
-
-class PersonalData ( object ):
-
-    @declared_attr
-    def __tablename__ ( cls ):
-        return cls . __name__ . lower ()
-    #
-    # __table_args__ = { 'mysql_engine' : 'InnoDB' }
-    # __mapper_args__ = { 'always_refresh' : True }
-
-    personal_tag=  Column ( Integer )
-    created_date= Column(DateTime)
-    #meter na metatabela
-    lista=set()
-    validade= Column ( Integer )
-
-
-
-    def __init__(self, *args, **kwargs):
-        self.personal_tag=1
-        print("\nPersonal_Data\n")
-        PersonalData.lista.add(self.__tablename__)
-        print("\n lista de classes privadas\n")
-        uniadder(self.__tablename__)
-        print(self.lista)
-        print("\n")                                                             #Inicializacoes
-
-
-
-        self.validade=180                                                       #validade em dias 6 meses
-        self.created_date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
-        print("\n DATA\n")
-        print(self.created_date)
-        print(self.created_date+timedelta(days=self.validade))
-        print("\n FIM\n")
-
-
-
-        #Base.__init__(self, *args, **kwargs)
-
-    @orm.reconstructor
-    def init_on_load(self):                                                     #printa sempre que for buscar algo a BD
-        print("\n\nCarregado da DB\n\n")
-
-    # def __getattribute__(self, name):                                         #printa todos os getters
-    #     print ("getting attribute %s" %name)
-    #     return object.__getattribute__(self, name)
-    #
-    # def __setattr__(self, name, val):                                         #printa todos os getters
-    #     print ("   setting attribute %s to %r" %(name, val))
-    #     return object.__setattr__(self, name, val)
-
-
-
-
-
-
-
-
-Base=declarative_base()
-
-
-class Metatable (Base):
-    __tablename__ = 'metatable'
-    id_sec= Column('id_sec', Integer, primary_key=True, unique=True)
-    l_pessoal= Column('pessoal', String, unique=True )
-    goal= Column('goal', String, nullable=True )
-    data_owner= Column('data_owner', String)
-    categorie= Column('categorie', String)
-    data_source = Column('data_source', String)
-    validade=Column('validade', Integer)
-
-
-    def __init__(self, value):
-        self.l_pessoal= value
-        self.goal="statistic"
-        self.categorie="External"
-        self.data_owner="DONO"
-        self.data_source="client"
-        self.validade=180
-
-
-
-
-
+#CHAMAR SEMPRE funcao de inicializacao da lib com o mesmo engine que a app
+libInit(engine)
 
 
 
@@ -158,32 +76,36 @@ class Checkin(Base):
 
 
 
-# engine = create_engine('sqlite:///user.db', echo=True)                         # ('sqlite:///:memory:', echo=True)   --- coloca a BD em memoria  se mudar para algo tipo user.db cria em file na dir
-# Base.metadata.create_all(bind=engine)
+
+# Cria todas as tabelas e classes referentes a aplicacao
+Base.metadata.create_all(bind=engine)
 
 
-Session = sessionmaker(bind=engine)                                             #Parte responsavel pelos commits dos objectos para a DB
 
 
 
+
+                                                    #Parte responsavel pela introducao dos objectos para a DB
+
+Session = sessionmaker(bind=engine)
 
 
 # para deixar o campo a nulo usar None
 
-
-
-
 session= Session()
+
+
+
 person = Person(0,"joao", "hotmail" )
 #person.personal_tag=1
 session.add(person)
 session.commit()
 
 #teste de funcao que adiciona uma pessoa
-adder()
+#adder()
 
 
-person = Person(1,"miguel", "gemail" )
+person = Person(1,"miguel O VELHO", "gemail" )
 person.personal_tag=1
 #Muda data de validade
 date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
@@ -192,10 +114,17 @@ person.created_date= date-timedelta(days=18000)
 session.add(person)
 session.commit()
 
+person = Person(2,"bruno", "hotmail2")
+session.add(person)
+session.commit()
 
+person = Person(3,"Manuel", "hotmail45")
+session.add(person)
+session.commit()
 
-
-
+person = Person(4,"Andre", "hotmail100")
+session.add(person)
+session.commit()
 
 # session.query(Person).filter(Person.id==0).delete()                           # Para apagar um objecto com querie
 # session.commit()                                                              # Para apagar um objecto com querie
@@ -207,13 +136,21 @@ restaurant = Restaurant(1,"Dinner","street" )
 session.add(restaurant)
 session.commit()
 
+restaurant = Restaurant(3,"MAC","Lisboa" )
+session.add(restaurant)
+session.commit()
 
-
+restaurant = Restaurant(2,"Pizza","Benfica" )
+session.add(restaurant)
+session.commit()
 
 checkin = Checkin(0,1 , 0 , "blabla", 3)
 session.add(checkin)
 session.commit()
 
+checkin = Checkin(1,2 , 3 , "blabla2", 7)
+session.add(checkin)
+session.commit()
 
 #Funcao de update de um valor o synchronize_session pode ter o valor 'evaluate'
 # session.query(Restaurant).filter(Restaurant.adress == "street").update({Restaurant.adress: "street2"}, synchronize_session=False)
@@ -225,6 +162,9 @@ session.close()
 
 
 
+
+
+                                                                        # testes das funcoes da lib
 limpa(Person)
 
 
@@ -236,12 +176,16 @@ change_val(Person,146)
 is_private(Person)
 is_private(Restaurant)
 is_private(Checkin)
+
+
+
+
+
+
+
                                                                             #parte responsavel pelo teste de query
 Session = sessionmaker(bind=engine)
 session= Session()
-
-
-
 
 
 #teste para guardar set de privados

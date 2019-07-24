@@ -5,10 +5,10 @@ from datetime import datetime, timedelta
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 
-Base=declarative_base()
-engine = create_engine('sqlite:///user.db', echo=True)                         # ('sqlite:///:memory:', echo=True)   --- coloca a BD em memoria  se mudar para algo tipo user.db cria em file na dir
-Base.metadata.create_all(bind=engine)
 
+Base=declarative_base()
+#nao necessario devido a funcao libInit
+#engine = create_engine('sqlite:///user.db', echo=True)                         # ('sqlite:///:memory:', echo=True)   --- coloca a BD em memoria  se mudar para algo tipo user.db cria em file na dir
 
 class PersonalData ( object ):
 
@@ -21,25 +21,19 @@ class PersonalData ( object ):
 
     personal_tag=  Column ( Integer )
     created_date= Column(DateTime)
-    #meter na metatabela
-    lista=set()
-    validade= Column ( Integer )
+    #validade= Column ( Integer )
 
 
 
     def __init__(self, *args, **kwargs):
+        #Inicializacoes
         self.personal_tag=1
-        print("\nPersonal_Data\n")
-        PersonalData.lista.add(self.__tablename__)
-        print("\n lista de classes privadas\n")
-        print(self.lista)
-        print("\n")                                                             #Inicializacoes
-        self.validade=180                                                       #validade em dias 6 meses
-        self.created_date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
-        print("\n DATA\n")
-        print(self.created_date)
-        print(self.created_date+timedelta(days=self.validade))
-        print("\n FIM\n")
+        # introducao na lista da metatabela
+        uniadder(self)
+        #testes para tag da validade
+        #self.validade=180                                                       #validade em dias 6 meses
+        self.created_date=datetime.now().replace(microsecond=0)
+
         #Base.__init__(self, *args, **kwargs)
 
     @orm.reconstructor
@@ -53,14 +47,6 @@ class PersonalData ( object ):
     # def __setattr__(self, name, val):                                         #printa todos os getters
     #     print ("   setting attribute %s to %r" %(name, val))
     #     return object.__setattr__(self, name, val)
-
-
-
-
-
-
-
-
 
 
 
@@ -87,70 +73,20 @@ class Metatable (Base):
 
 
 
-
-
-
-class Person (Base, PersonalData ):
-    __tablename__ = 'person'
-
-    id = Column('id', Integer, primary_key=True)
-    name = Column('name', String)
-    email = Column ('email', String, unique=True)
-    chekin_p=relationship("Checkin")
-
-    def __repr__(self):
-        return "<Person(name='%s', email='%s')>" % (self.name, self.email)
-
-    def __init__(self, id, name, email):
-        PersonalData.__init__(self)                             #tirar isto daqui????
-        self.id=id
-        self.name=name
-        self.email=email
+#funcao de inicializacao que quando e chamada recebe
+#o engine de forma a tanto a lib como a app estarem a usar o mesmo engine cria as classes e tabelas da lib
+def libInit(engine_arg):
+    global engine
+    engine  = engine_arg
+    Base.metadata.create_all(bind=engine)
 
 
 
 
-class Restaurant (Base):
-    __tablename__ = 'restaurant'
-
-    id_r= Column('id_r', Integer, primary_key=True)
-    name = Column('name', String)
-    adress = Column ('adress', String, unique=True)
-    chekin_r=relationship("Checkin")
-
-    def __repr__(self):
-        return "<Restaurant(name='%s', adress='%s')>" % (self.name, self.adress)
-
-    def __init__(self, id, name, adress):
-        self.id_r=id
-        self.name=name
-        self.adress=adress
-
-
-class Checkin(Base):
-    __tablename__ = 'checkin'
-
-    id_c=Column('id_c', Integer, primary_key=True)
-    id=Column(Integer, ForeignKey('person.id'))
-    id_r= Column(Integer, ForeignKey('restaurant.id_r'))
-    description = Column('description', String)
-    rating = Column ('rating', Integer)
-
-    def __repr__(self):
-        return "<Checkin(description='%s', rating='%d')>" % (self.description, self.rating)
-
-    def __init__(self, id_c, id, id_r, description, rating):
-        self.id_c=id_c
-        self.id=id
-        self.id_r=id_r
-        self.description=description
-        self.rating=rating
 
 
 
 
-engine = create_engine('sqlite:///user.db', echo=True)                         # ('sqlite:///:memory:', echo=True)   --- coloca a BD em memoria  se mudar para algo tipo user.db cria em file na dir
-Base.metadata.create_all(bind=engine)
 
 
                                             #Funcoes paralelas ao ORM
@@ -159,11 +95,11 @@ Base.metadata.create_all(bind=engine)
 
 #Coloca apenas um valor na metatable para guardar os nomes de classes privadas
 def uniadder(value):
-    print(value)
+    print("\n\n Uniadder: %s\n\n"%(value.__tablename__))
     Session = sessionmaker(bind=engine)
     session= Session()
     try:
-        data = Metatable(value)
+        data = Metatable(value.__tablename__)
         session.add(data)
         session.commit()
     except:
@@ -178,18 +114,18 @@ def limpa(value):
     session= Session()
     for data in session.query(Metatable.validade).filter(Metatable.l_pessoal==value.__tablename__):
         prazo=data.validade
-        print("limpa:\n\n\n\n TESTE VALIDADE   %s\n\n\n"%(prazo))
+        print("\n\n\n\nlimpa: TESTE VALIDADE   %s\n\n\n"%(prazo))
     date=datetime.now().replace(microsecond=0)
 
 
 
-    # Debbug das datas e etc apagar
-    # for data in session.query(value).filter((value.created_date+timedelta(days=prazo))<=date):
-    #     print("\n\n\n\n TESTE DATAS  %s\n\n\n"%(data.created_date))
-    #     cenas=data.created_date+timedelta(days=prazo)
-    #     print("\n\n\n\n TESTE DATAS2  %s\n\n\n"%(cenas))
-    #     session.query(value).filter(cenas>date).delete()
-    #     print("\n\n\n\n TESTE expressao  %r\n\n\n"%(cenas<date))
+        # Debbug das datas e etc apagar
+        # for data in session.query(value).filter((value.created_date+timedelta(days=prazo))<=date):
+        #     print("\n\n\n\n TESTE DATAS  %s\n\n\n"%(data.created_date))
+        #     cenas=data.created_date+timedelta(days=prazo)
+        #     print("\n\n\n\n TESTE DATAS2  %s\n\n\n"%(cenas))
+        #     session.query(value).filter(cenas>date).delete()
+        #     print("\n\n\n\n TESTE expressao  %r\n\n\n"%(cenas<date))
 
     session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).delete()
     session.commit()
@@ -202,7 +138,7 @@ def change_val(class1, value):
     Session = sessionmaker(bind=engine)
     session= Session()
     session.query(Metatable).filter(Metatable.l_pessoal== class1.__tablename__).update({Metatable.validade: value}, synchronize_session=False)
-    print("\n\n change_val: VAlidade modificada para %d"%(value))
+    print("\n\n change_val: VAlidade modificada para %d\n\n\n"%(value))
     session.commit()
 
 
@@ -211,7 +147,7 @@ def change_val(class1, value):
 
 
 
-#print se a classe dada for privada erro: nao diz se a classe e publica
+#print se a classe dada for privada erro: se a classe e publica nao diz nda
 def is_private(class1):
     Session = sessionmaker(bind=engine)
     session= Session()
@@ -243,11 +179,11 @@ def alerta_vazio():
         print("TESTE DE ALERTA")
     session.commit()
 
-#teste de funcao para BD
-def adder():
-    Session = sessionmaker(bind=engine)
-    session= Session()
-    person = Person(2,"bruno", "hotmail2")
-    session.add(person)
-    session.commit()
-    #print("adder:Added one person\n")
+#teste de funcao para BD OUTDATED
+# def adder():
+#     Session = sessionmaker(bind=engine)
+#     session= Session()
+#     person = Person(2,"bruno", "hotmail2")
+#     session.add(person)
+#     session.commit()
+#     #print("adder:Added one person\n")
