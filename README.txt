@@ -12,6 +12,12 @@ python app.py
 
 
 
+######APP#######
+
+na construcao de app chamar sempre
+import da lib e 
+libInit(engine)
+
 
 ######GIT#######
 
