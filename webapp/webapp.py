@@ -80,15 +80,17 @@ def showall():
     persons = session.query(Person).all()
     results=[]
     for person in persons:
-        results.append({'id':person.id,'name':person.name,'email':person.email, 'Personal_tag':person.personal_tag,})    # 'creation_date':person.created_date    data n funciona em jason
+        results.append({'id':person.id,'name':person.name,'email':person.email, 'Personal_tag':person.personal_tag,'creation_date':person.created_date.isoformat()})  # data n funciona em jason
     #session.close()
 
-    #teste para ver data pk n da em JASON
-    print("\n Persons data\n")
-    persons = session.query(Person).all()
-    for person in persons:
-        print ("\n\nPessoa com o nome %s id %d e email %s    %s\n" %(person.name, person.id, person.email,person.created_date))
-    #fim de teste
+    # #teste para ver data pk n da em JASON
+    # print("\n Persons data\n")
+    # persons = session.query(Person).all()
+    # for person in persons:
+    #     print ("\n\nPessoa com o nome %s id %d e email %s    %s\n" %(person.name, person.id, person.email,person.created_date))
+    # #fim de teste
+
+
     return{'Persons Data': results}
 
 @route('/admin')
