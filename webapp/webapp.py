@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.ext.declarative import declared_attr
 
 #Lib imports
+from PersonalVerLib import *
 
 #bottle imports
 from bottle import run, route, template, post , request, get
@@ -14,13 +15,14 @@ from bottle import run, route, template, post , request, get
 #data Base creation
 engine = create_engine('sqlite:///user.db', echo=True)
 
+#CHAMAR SEMPRE funcao de inicializacao da lib com o mesmo engine que a app
+libInit(engine)
+#Base=declarative_base()   # tirar devido a lib init da biblioteca
 
-Base=declarative_base()   # tirar devido a lib init da biblioteca
 
 
 
-
-class Person (Base):        #, PersonalData
+class Person (Base, PersonalData):        #, PersonalData
     __tablename__ = 'person'
 
     id = Column('id', Integer, primary_key=True)
@@ -32,7 +34,7 @@ class Person (Base):        #, PersonalData
         return "<Person(name='%s', email='%s')>" % (self.name, self.email)
 
     def __init__(self, id, name, email):
-        #PersonalData.__init__(self)                             #Parte de inicializacao da lib
+        PersonalData.__init__(self)                             #Parte de inicializacao da lib
         self.id=id
         self.name=name
         self.email=email
@@ -78,7 +80,7 @@ def showall():
     persons = session.query(Person).all()
     results=[]
     for person in persons:
-        results.append({'id':person.id,'name':person.name,'email':person.email})
+        results.append({'id':person.id,'name':person.name,'email':person.email, 'Personal_tag':person.personal_tag,})    # 'creation_date':person.created_date    data n funciona em jason
     #session.close()
     return{'Persons Data': results}
 

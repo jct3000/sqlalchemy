@@ -11,4 +11,4 @@
  <input type="submit" value="Submit">
 </form><br><br>
 <p>Show all persons details :<a href="http://127.0.0.1:8080/showall"> Show all </a></p><br>
-<p>Return:<a href="http://127.0.0.1:8080/client"> Return </a></p>
+<p>Return:<a href="http://127.0.0.1:8080/"> Return </a></p>
