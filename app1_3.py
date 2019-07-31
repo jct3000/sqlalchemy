@@ -114,6 +114,15 @@ person.created_date= date-timedelta(days=18000)
 session.add(person)
 session.commit()
 
+person = Person(5,"miguel O SEGUNDO VELHO", "gemail900000" )
+person.personal_tag=1
+#Muda data de validade
+date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
+person.created_date= date-timedelta(days=18000)
+
+session.add(person)
+session.commit()
+
 person = Person(2,"bruno", "hotmail2")
 session.add(person)
 session.commit()
@@ -164,14 +173,39 @@ session.close()
 
 
 
-                                                                        # testes das funcoes da lib
+
+                                                                    # testes das funcoes da lib
+
+#ambas as funcoes tem de ter algo na BD
+#teste do lista fora do prazo
+print("\n\n\n\n\n  TESTES LISTA FORA PRAZO")
+results=[]
+results=clean_list(Person)
+print("LISTA FORA VALIDADE:")
+print(results)
+
+#teste do show validade
+teste=show_val(Person)
+print("\n\n\n\n TESTES show_val: %d"%(teste))
+#teste do limpa expired data
 limpa(Person)
 
 
-
+#teste do alerta_vazio
 alerta_vazio()
 
+
+#teste do change validade
 change_val(Person,146)
+
+
+
+
+
+#teste do show validade
+teste=show_val(Person)
+print("\n\n\n\n TESTES show_val: %d"%(teste))
+
 
 is_private(Person)
 is_private(Restaurant)
@@ -180,6 +214,11 @@ is_private(Checkin)
 
 
 
+#ve as tabelas que tao na BD   APAGAR
+print("TABELAS NA BD\n\n\n\n\n")
+print (engine.table_names())
+print(Person.__name__)
+print("TABELAS NA BD FIM\n\n\n\n\n")
 
 
 

@@ -132,6 +132,22 @@ def limpa(value):
 
 
 
+# retorna uma lista de todos os dados de uma classe que estao expired
+def clean_list(value):
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    for data in session.query(Metatable.validade).filter(Metatable.l_pessoal==value.__tablename__):
+        prazo=data.validade
+        print("\n\n\n\nclean_list: TESTE VALIDADE   %s\n\n\n"%(prazo))
+    date=datetime.now().replace(microsecond=0)
+
+    persons=session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).all()
+    results=[]
+    for person in persons:
+        results.append({'id':person.id,'name':person.name,'email':person.email, 'Personal_tag':person.personal_tag,'creation_date':person.created_date.isoformat()})  # data n funciona em jason
+    #session.close()
+    session.commit()
+    return results
 
 #Muda a validade na metatabela de uma determinada classe pessoal para o valor dado em dias
 def change_val(class1, value):
@@ -142,6 +158,13 @@ def change_val(class1, value):
     session.commit()
 
 
+#devolde o prazo de validade de uma classe dada
+def show_val(value):
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    for data in session.query(Metatable.validade).filter(Metatable.l_pessoal==value.__tablename__):
+        prazo=data.validade
+    return prazo
 
 
 
