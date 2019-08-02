@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm, DateTime, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime, timedelta
@@ -63,6 +63,11 @@ class Checkin(Base):
     id_r= Column(Integer, ForeignKey('restaurant.id_r'))
     description = Column('description', String)
     rating = Column ('rating', Integer)
+
+    #para ter algo nas ligacoes do inspect
+    #num= relationship(Restaurant)
+    #num2=relationship(Person)
+
 
     def __repr__(self):
         return "<Checkin(description='%s', rating='%d')>" % (self.description, self.rating)
@@ -218,6 +223,19 @@ is_private(Checkin)
 print("TABELAS NA BD\n\n\n\n\n")
 print (engine.table_names())
 print(Person.__name__)
+
+#ve as ligacoes que tao na BD   APAGAR
+#maneira 1
+i=inspect(Person)
+for relation in i.relationships:
+    print(relation.direction.name)
+    print(relation.remote_side)
+    print(relation._reverse_property)
+
+#maneira 2
+relationship_list = [str(list(column.remote_side)[0]).split('.')[0] for column \
+                    in inspect(Person).relationships]
+print (relationship_list)
 print("TABELAS NA BD FIM\n\n\n\n\n")
 
 

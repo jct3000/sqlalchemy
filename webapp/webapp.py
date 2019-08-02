@@ -82,15 +82,7 @@ Base.metadata.create_all(bind=engine)
 
 
                                                                 # Parte de testes APAGAR
-#Da erro a meter directamente na base de dados
-# Session = sessionmaker(bind=engine)
-# # para deixar o campo a nulo usar None
-# session= Session()
-# person = Person(0,"joao", "hotmail" )
-# #person.personal_tag=1
-# session.add(person)
-# session.commit()
-# session.close()
+
 
 
 
@@ -131,6 +123,62 @@ def deleteperson(id):
 @route('/signinperson') # log in de pessoa
 def signinperson():
     return template('person_id_form')
+
+                                                                        #funcao de testes de intro na BD APAGAR
+@route('/create')
+def create():
+    #Da erro a meter directamente na base de dados
+    Session = sessionmaker(bind=engine)
+    # para deixar o campo a nulo usar None
+    session= Session()
+    person = Person(30,"joao", "hotmail" )
+    #person.personal_tag=1
+    session.add(person)
+    session.commit()
+    person = Person(31,"miguel O VELHO", "gemail" )
+    person.personal_tag=1
+    #Muda data de validade
+    date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
+    person.created_date= date-timedelta(days=18000)
+    session.add(person)
+    session.commit()
+    person = Person(35,"miguel O SEGUNDO VELHO", "gemail900000" )
+    person.personal_tag=1
+    #Muda data de validade
+    date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
+    person.created_date= date-timedelta(days=18000)
+    session.add(person)
+    session.commit()
+    person = Person(32,"bruno", "hotmail2")
+    session.add(person)
+    session.commit()
+    person = Person(33,"Manuel", "hotmail45")
+    session.add(person)
+    session.commit()
+    person = Person(34,"Andre", "hotmail100")
+    session.add(person)
+    session.commit()
+    restaurant = Restaurant(31,"Dinner","street" )
+    session.add(restaurant)
+    session.commit()
+    restaurant = Restaurant(33,"MAC","Lisboa" )
+    session.add(restaurant)
+    session.commit()
+    restaurant = Restaurant(32,"Pizza","Benfica" )
+    session.add(restaurant)
+    session.commit()
+    checkin = Checkin(30,31 , 30 , "blabla", 3)
+    session.add(checkin)
+    session.commit()
+    checkin = Checkin(31,32 , 33 , "blabla2", 7)
+    session.add(checkin)
+    session.commit()
+    session.close()
+    return '<h1>Creating Done</h1>'
+
+                                                                #FIM funcao de testes de intro na BD APAGAR
+
+
 
 
 
