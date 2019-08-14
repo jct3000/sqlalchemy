@@ -24,7 +24,7 @@ class Person (Base, PersonalData ):
     id = Column('id', Integer, primary_key=True)
     name = Column('name', String)
     email = Column ('email', String, unique=True)
-    chekin_p=relationship("Checkin")
+    checkin_p=relationship("Checkin")
 
     def __repr__(self):
         return "<Person(name='%s', email='%s')>" % (self.name, self.email)
@@ -44,7 +44,8 @@ class Restaurant (Base):
     id_r= Column('id_r', Integer, primary_key=True)
     name = Column('name', String)
     adress = Column ('adress', String, unique=True)
-    chekin_r=relationship("Checkin")
+    checkin_r=relationship("Checkin")
+
 
     def __repr__(self):
         return "<Restaurant(name='%s', adress='%s')>" % (self.name, self.adress)
@@ -65,8 +66,8 @@ class Checkin(Base):
     rating = Column ('rating', Integer)
 
     #para ter algo nas ligacoes do inspect
-    #num= relationship(Restaurant)
-    #num2=relationship(Person)
+    # num= relationship("Restaurant", back_populates="checkin_r")
+    # num2=relationship("Person", back_populates="checkin_p")
 
 
     def __repr__(self):
@@ -220,10 +221,10 @@ is_private(Checkin)
 
 
 #ve as tabelas que tao na BD   APAGAR
-print("TABELAS NA BD\n\n\n\n\n")
+print("\n\n\n\nTABELAS NA BD\n")
 print (engine.table_names())
 print(Person.__name__)
-
+print("\n\n\n\nRELACOES NA BD")
 #ve as ligacoes que tao na BD   APAGAR
 #maneira 1
 i=inspect(Person)
@@ -231,10 +232,11 @@ for relation in i.relationships:
     print(relation.direction.name)
     print(relation.remote_side)
     print(relation._reverse_property)
-
+    #print as dos argumentos de relations
+    #print(dir(relation))
 #maneira 2
-relationship_list = [str(list(column.remote_side)[0]).split('.')[0] for column \
-                    in inspect(Person).relationships]
+print("\n\n\n\nRELACOES NA BD man 2")
+relationship_list = [str(list(column.remote_side)[0]).split('.')[0] for column in inspect(Person).relationships]
 print (relationship_list)
 print("TABELAS NA BD FIM\n\n\n\n\n")
 
