@@ -114,10 +114,10 @@ for t in engine.table_names():
 print("\n\n--------Grafo---------")
 print (grafo)
 print("\n\n--------TODOS CAMINHOS---------")
-print(find_all_paths(grafo, 'checkin', 'person'))
+print(find_all_paths(grafo, 'grade', 'restaurant'))
 print("\n\n--------CAMINHO MAIS PEQUENO---------")
-print(find_shortest_path(grafo, 'checkin', 'restaurant'))
-print("\n\n--------UM CAMINHO---------")
+print(find_shortest_path(grafo, 'grade', 'restaurant'))
+print("\n\n-------- UM CAMINHO---------")
 print(find_path(grafo, 'checkin', 'person'))
 
 

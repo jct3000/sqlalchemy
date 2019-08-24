@@ -481,7 +481,7 @@ def liscleanperson():
 @route('/showval')   # lista dados pessoais fora de validade
 def showval():
     result=show_val(Person)
-    return "Time constrain of the class person is {0}".format(result)
+    return "Time constrain of the class person is {0} days".format(result)
 
 #   TEM DE TER ALGUMA PESSOA NA TABELA
 # nao sera melhor nao depender da classe??
@@ -518,10 +518,10 @@ def create():
     person = Person(32,"bruno", "hotmail2")
     session.add(person)
     session.commit()
-    person = Person(33,"Manuel", "hotmail45")
+    person = Person(34,"Andre", "hotmail100")
     session.add(person)
     session.commit()
-    person = Person(34,"Andre", "hotmail100")
+    person = Person(33,"Manuel", "hotmail45")
     session.add(person)
     session.commit()
     restaurant = Restaurant(31,"Dinner","street" )
@@ -546,10 +546,10 @@ def create():
     session.add(employee)
     session.commit()
     employee = Employee(42,"trabalhador VELHO", "sapo900000" )
-    person.personal_tag=1
+    employee.personal_tag=1
     #Muda data de validade
     date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
-    person.created_date= date-timedelta(days=18000)
+    employee.created_date= date-timedelta(days=18000)
     session.add(employee)
     session.commit()
     schedule = Schedule(40,40,31,datetime.now().replace(microsecond=0)+timedelta(hours=1),datetime.now().replace(microsecond=0)+timedelta(hours=8))
