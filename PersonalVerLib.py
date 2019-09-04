@@ -1,10 +1,11 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm, DateTime, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime, timedelta
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 
+import sys
 
 Base=declarative_base()
 #nao necessario devido a funcao libInit
@@ -130,8 +131,6 @@ def limpa(value):
     session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).delete()
     session.commit()
 
-
-
 # retorna uma lista de todos os dados de uma classe que estao expired
 def clean_list(value):
     Session = sessionmaker(bind=engine)
@@ -169,7 +168,6 @@ def show_val(value):
 
 
 
-
 #print se a classe dada for privada erro: se a classe e publica nao diz nda
 def is_private(class1):
     Session = sessionmaker(bind=engine)
@@ -201,3 +199,43 @@ def alerta_vazio():
         print("\n\n\nalerta_vazio Warning: validade of set %s is empty\n\n\n"%(data.l_pessoal))
         print("TESTE DE ALERTA")
     session.commit()
+
+#################################################################################################
+#SHOW PRIVATE DATA GIVEN CLASS AND ID
+################################################################################################
+
+
+#ERROR: append with no idea of what the classe is coded no idea that as a classe.name
+
+def showclassdata(classe, id_aux):
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    objects = session.query(classe).filter(classe.id==id_aux)
+    #results=[]
+    results={}
+    aux=[]
+
+    for object in objects:
+        for key, value  in object.__dict__.items():
+            #print key, value
+            results.update( {str(key) : str(value)} )
+        results.pop('_sa_instance_state')
+        #results.append(str(object.__dict__.items()))# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
+        #results.append("["+str(object.__dict__.items()).split(",",2)[2])# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
+
+
+
+    relationship_list = [str(list(column.remote_side)[0]).split('.')[0] for column in inspect(classe).relationships]
+    aux.extend(relationship_list)
+    results.update( {'Relations' : aux} )
+    for relationship in relationship_list:
+        print("\n\n\n\n\n\n\n HERE \n\n\n\n\n\n")
+        #print(sys.modules[__name__])
+        #eval("webapp import *")
+        #print(type(eval(relationship.capitalize()))) # para saber o tipo aqui eval(relationship.capitalize())
+        #objects = session.query(relationship.capitalize()).filter(relationship.capitalize().id==id_aux)   #relatioship continua a ser string
+        #for object in objects:
+            #agrupar os resultados como em append anterior
+            #results.append(str(object.__dict__.items()))# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
+    session.close()
+    return results
