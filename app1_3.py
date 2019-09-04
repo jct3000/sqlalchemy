@@ -80,8 +80,15 @@ class Checkin(Base):
         self.description=description
         self.rating=rating
 
+###############################################################################
+# Mudar a base em runtime
+###############################################################################
 
 
+#Checkin.__bases__ = Checkin.__bases__ + (PersonalData,)
+
+
+###############################################################################
 
 # Cria todas as tabelas e classes referentes a aplicacao
 Base.metadata.create_all(bind=engine)
@@ -112,7 +119,7 @@ session.commit()
 
 
 person = Person(1,"miguel O VELHO", "gemail" )
-person.personal_tag=1
+#person.personal_tag=1
 #Muda data de validade
 date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
 person.created_date= date-timedelta(days=18000)
@@ -121,7 +128,7 @@ session.add(person)
 session.commit()
 
 person = Person(5,"miguel O SEGUNDO VELHO", "gemail900000" )
-person.personal_tag=1
+#person.personal_tag=1
 #Muda data de validade
 date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
 person.created_date= date-timedelta(days=18000)
@@ -271,3 +278,6 @@ for checkin in checkins:
     print ("\n\ncheckin com o id %d da pessoa com id %d no restaurante de id %d Descricao %s e Qualificacao %d \n" %(checkin.id_c , checkin.id , checkin.id_r, checkin.description, checkin.rating))
 
 session.close()
+
+
+print(isinstance(Checkin, PersonalData))

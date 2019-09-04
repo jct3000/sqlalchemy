@@ -370,6 +370,19 @@ def showperson(id):
     #session.close()
     return {'Personal Data': results5}#'<h1>Personal Page of id  {0}</h1>'.format(id)
 
+####################################################################################################
+# HIDE THE QUERIES FROM PROGRAMATOR
+###################################################################################################
+
+
+@route('/show_data_person/<id>') #get???   show de dados pessoais de um id
+def showperson(id):
+    results5=showclassdata(Person, id)
+    return {'Personal Data': results5}#'<h1>Personal Page of id  {0}</h1>'.format(id)
+
+
+####################################################################################################
+
 @route('/showrestaurant/<id_r>') #get???   show de dados pessoais de um id restaurant
 def showrestaurant(id_r):
     Session = sessionmaker(bind=engine)

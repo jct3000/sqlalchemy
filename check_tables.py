@@ -14,7 +14,9 @@ engine = create_engine('sqlite:///user.db', echo=False)                         
 meta = MetaData()
 
 
-
+################################################################################
+#FUNCAO DE PASSAR PELOS NOMES DA METATABELA
+################################################################################
 
 
 
@@ -42,7 +44,7 @@ def func(t):
 
 
 ################################################################################
-#FUNCAO DE CREACAO DE GRAFOS
+#FUNCAO DE CREACAO E ESTUDO DE GRAFOS
 ################################################################################
 
 grafo={}
@@ -105,12 +107,33 @@ def find_shortest_path(graph, start, end, path=[]):
                 if not shortest or len(newpath) < len(shortest):
                     shortest = newpath
     return shortest
-
+###############################################################################
+#FUNCAO DE DESCENDENTES DIRETOS
+#
+#nao esta implementado aqui pk tem de ter acesso a metatabela esta na libV2
+###############################################################################
+#
+# def find_direct_descend(graph, father, path=[]):
+#     n=0
+#     Session = sessionmaker(bind=engine)
+#     session= Session()
+#     data= session.query(Metatable).all()
+#     for t in data:
+#         if((find_shortest_path(graph,t.l_pessoal,father)) is None or n<len(find_shortest_path(graph,t.l_pessoal,father))==1):
+#             path=path
+#         elif(n<len(find_shortest_path(graph,t.l_pessoal,father))):
+#             n=len(find_shortest_path(graph,t.l_pessoal,father))
+#             path=(find_shortest_path(graph,t.l_pessoal,father))
+#     session.commit()
+#     session.close()
+#     return path
+###############################################################################
 
 for t in engine.table_names():
     #print("TABELA - "+t)
     #func(t)
     creategraph(t)
+
 print("\n\n--------Grafo---------")
 print (grafo)
 print("\n\n--------TODOS CAMINHOS---------")
@@ -119,6 +142,11 @@ print("\n\n--------CAMINHO MAIS PEQUENO---------")
 print(find_shortest_path(grafo, 'checkin', 'restaurant'))
 print("\n\n--------UM CAMINHO---------")
 print(find_path(grafo, 'checkin', 'person'))
+print("\n\n--------CAMINHO MAIS PEQUENO tamanho---------")
+print(find_shortest_path(grafo, 'checkin', 'person'))
+print(len(find_shortest_path(grafo, 'checkin', 'person')))
+# print("\n\n--------Descendentes---------")
+# print(find_direct_descend(grafo, 'person'))
 
 
 ################################################################################

@@ -201,12 +201,3 @@ def alerta_vazio():
         print("\n\n\nalerta_vazio Warning: validade of set %s is empty\n\n\n"%(data.l_pessoal))
         print("TESTE DE ALERTA")
     session.commit()
-
-#teste de funcao para BD OUTDATED
-# def adder():
-#     Session = sessionmaker(bind=engine)
-#     session= Session()
-#     person = Person(2,"bruno", "hotmail2")
-#     session.add(person)
-#     session.commit()
-#     #print("adder:Added one person\n")
