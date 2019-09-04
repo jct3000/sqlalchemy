@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.ext.declarative import declared_attr
 
 
-from PersonalVerLib import *
+from PersonalVerLibV2 import *
 
 
 
@@ -56,7 +56,7 @@ class Restaurant (Base):
         self.adress=adress
 
 
-class Checkin(Base):
+class Checkin(Base, PersonalData ):
     __tablename__ = 'checkin'
 
     id_c=Column('id_c', Integer, primary_key=True)
@@ -74,14 +74,22 @@ class Checkin(Base):
         return "<Checkin(description='%s', rating='%d')>" % (self.description, self.rating)
 
     def __init__(self, id_c, id, id_r, description, rating):
+        PersonalData.__init__(self)
         self.id_c=id_c
         self.id=id
         self.id_r=id_r
         self.description=description
         self.rating=rating
 
+###############################################################################
+# Mudar a base em runtime
+###############################################################################
 
 
+#Checkin.__bases__ = Checkin.__bases__ + (PersonalData,)
+
+
+###############################################################################
 
 # Cria todas as tabelas e classes referentes a aplicacao
 Base.metadata.create_all(bind=engine)
@@ -112,7 +120,7 @@ session.commit()
 
 
 person = Person(1,"miguel O VELHO", "gemail" )
-person.personal_tag=1
+#person.personal_tag=1
 #Muda data de validade
 date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
 person.created_date= date-timedelta(days=18000)
@@ -121,7 +129,7 @@ session.add(person)
 session.commit()
 
 person = Person(5,"miguel O SEGUNDO VELHO", "gemail900000" )
-person.personal_tag=1
+#person.personal_tag=1
 #Muda data de validade
 date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
 person.created_date= date-timedelta(days=18000)
@@ -257,7 +265,7 @@ for meta in metas:
 print("\n Persons data\n")
 persons = session.query(Person).all()
 for person in persons:
-    print ("\n\nPessoa com o nome %s id %d e email %s    %s\n" %(person.name, person.id, person.email,person.created_date))
+    print ("\n\nPessoa com o nome %s id %d e email %s    %s   || tag %s \n" %( person.name, person.id, person.email,person.created_date,person.personal_tag))
 
 print("\n Restaurant data\n")
 restaurants = session.query(Restaurant).all()
@@ -268,6 +276,14 @@ for restaurant in restaurants:
 print("\nCheckin data\n")                                                                              #last query erro
 checkins = session.query(Checkin).all()
 for checkin in checkins:
-    print ("\n\ncheckin com o id %d da pessoa com id %d no restaurante de id %d Descricao %s e Qualificacao %d \n" %(checkin.id_c , checkin.id , checkin.id_r, checkin.description, checkin.rating))
+    print ("\n\nTAG :%s ||||| checkin com o id %d da pessoa com id %d no restaurante de id %d Descricao %s e Qualificacao %d \n" %(checkin.personal_tag, checkin.id_c , checkin.id , checkin.id_r, checkin.description, checkin.rating))
 
 session.close()
+
+
+print(isinstance(Checkin, PersonalData))
+print("\n\n--------DESCENDENTES---------")
+print(find_direct_descend(grafo, 'person'))
+
+print("\n\n--------DESCENDENTES Publico---------")
+print(find_direct_descend(grafo, 'restaurant'))

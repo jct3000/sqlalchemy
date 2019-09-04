@@ -14,7 +14,9 @@ engine = create_engine('sqlite:///user.db', echo=False)                         
 meta = MetaData()
 
 
-
+################################################################################
+#FUNCAO DE PASSAR PELOS NOMES DA METATABELA
+################################################################################
 
 
 
@@ -42,7 +44,7 @@ def func(t):
 
 
 ################################################################################
-#FUNCAO DE CREACAO DE GRAFOS
+#FUNCAO DE CREACAO E ESTUDO DE GRAFOS
 ################################################################################
 
 grafo={}
@@ -111,6 +113,7 @@ for t in engine.table_names():
     #print("TABELA - "+t)
     #func(t)
     creategraph(t)
+
 print("\n\n--------Grafo---------")
 print (grafo)
 print("\n\n--------TODOS CAMINHOS---------")
@@ -119,8 +122,16 @@ print("\n\n--------CAMINHO MAIS PEQUENO---------")
 print(find_shortest_path(grafo, 'checkin', 'restaurant'))
 print("\n\n--------UM CAMINHO---------")
 print(find_path(grafo, 'checkin', 'person'))
-
-
+print("\n\n--------CAMINHO MAIS PEQUENO NULO---------")
+print(find_shortest_path(grafo, 'person', 'restaurant'))
+print(find_shortest_path(grafo, 'person', 'restaurant'))
+print("\n\n--------CAMINHOS TESTE---------")
+print(find_path(grafo, 'person', 'person'))
+print(len(find_path(grafo, 'person', 'person')))
+print(find_path(grafo, 'checkin', 'person'))
+print(len(find_path(grafo, 'checkin', 'person')))
+print(find_path(grafo, 'checkin', 'checkin'))
+print(len(find_path(grafo, 'checkin', 'checkin')))
 ################################################################################
 #TESTES
 ###############################################################################

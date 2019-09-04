@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.ext.declarative import declared_attr
 
 #Lib imports
-from PersonalVerLib import *
+from PersonalVerLibV2 import *
 
 #bottle imports
 from bottle import run, route, template, post , request, get
@@ -46,6 +46,7 @@ class Restaurant (Base):
     name = Column('name', String)
     adress = Column ('adress', String, unique=True)
     chekin_r=relationship("Checkin")
+    schedule_r=relationship("Schedule")
 
     def __repr__(self):
         return "<Restaurant(name='%s', adress='%s')>" % (self.name, self.adress)
@@ -64,6 +65,7 @@ class Checkin(Base, PersonalData):
     id_r= Column(Integer, ForeignKey('restaurant.id_r'))
     description = Column('description', String)
     rating = Column ('rating', Integer)
+    grade_c=relationship("Grade")
 
     def __repr__(self):
         return "<Checkin(description='%s', rating='%d')>" % (self.description, self.rating)
@@ -82,7 +84,7 @@ class Employee (Base, PersonalData):        #, PersonalData
     id_e = Column('id_e', Integer, primary_key=True)
     name = Column('name', String)
     email = Column ('email', String, unique=True)
-    #chekin_p=relationship("Checkin")
+    schedule_e=relationship("Schedule")
 
     def __repr__(self):
         return "<Person(name='%s', email='%s')>" % (self.name, self.email)
@@ -102,6 +104,7 @@ class Schedule (Base, PersonalData):
     id_r= Column(Integer, ForeignKey('restaurant.id_r'))
     checkin= Column ('checkin', DateTime)
     checkout= Column ('checkout', DateTime)
+    grade_s=relationship("Grade")
 
     def __repr__(self):
         return "<Schedule(checkin='%s', checkout='%s')>" % (self.checkin, self.checkout)
@@ -353,7 +356,7 @@ def showcheckin(id):
     checkins = session.query(Checkin).filter(Checkin.id==id)
     results4=[]
     for checkin in checkins:
-        results4.append({'id':checkin.id_c,'restaurant_id':checkin.id_r,'person_id':checkin.id,'description':checkin.description,'rating':checkin.rating})  # data n funciona em jason
+        results4.append({'id':checkin.id_c,'restaurant_id':checkin.id_r,'person_id':checkin.id,'description':checkin.description,'rating':checkin.rating,'Personal_tag':checkin.personal_tag,'creation_date':checkin.created_date.isoformat()})  # data n funciona em jason
     #session.close()
     return {'Checkins of person': results4}#'<h1>Personal Page of id  {0}</h1>'.format(id)
 
@@ -369,6 +372,19 @@ def showperson(id):
         results5.append({'id':person.id,'name':person.name,'email':person.email, 'Personal_tag':person.personal_tag,'creation_date':person.created_date.isoformat()})  # data n funciona em jason
     #session.close()
     return {'Personal Data': results5}#'<h1>Personal Page of id  {0}</h1>'.format(id)
+
+####################################################################################################
+# HIDE THE QUERIES FROM PROGRAMATOR
+###################################################################################################
+
+
+@route('/show_data_person/<id>') #get???   show de dados pessoais de um id
+def showperson(id):
+    results5=showclassdata(Person, id)
+    return {'Personal Data': results5}#'<h1>Personal Page of id  {0}</h1>'.format(id)
+
+
+####################################################################################################
 
 @route('/showrestaurant/<id_r>') #get???   show de dados pessoais de um id restaurant
 def showrestaurant(id_r):
@@ -502,14 +518,14 @@ def create():
     session.add(person)
     session.commit()
     person = Person(31,"miguel O VELHO", "gemail" )
-    person.personal_tag=1
+    #person.personal_tag=1
     #Muda data de validade
     date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
     person.created_date= date-timedelta(days=18000)
     session.add(person)
     session.commit()
     person = Person(35,"miguel O SEGUNDO VELHO", "gemail900000" )
-    person.personal_tag=1
+    #person.personal_tag=1
     #Muda data de validade
     date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
     person.created_date= date-timedelta(days=18000)
@@ -546,7 +562,7 @@ def create():
     session.add(employee)
     session.commit()
     employee = Employee(42,"trabalhador VELHO", "sapo900000" )
-    employee.personal_tag=1
+    #employee.personal_tag=1
     #Muda data de validade
     date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
     employee.created_date= date-timedelta(days=18000)
