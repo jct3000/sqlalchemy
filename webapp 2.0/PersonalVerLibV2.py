@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 
+import sys
 
 #inclusao para o checktables
 from sqlalchemy.schema import Table
@@ -328,9 +329,13 @@ def Personal_tag_router(classe):
             pass
         elif(((len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):      #tinha um if((find_shortest_path(grafo, classe.__tablename__, x.l_pessoal) is None) or(len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):
             value=classe.__tablename__
-        elif ((n<len(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal)))and (len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))>1)):
-            n=len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))
-            value=x.l_pessoal
+        elif ((n<=len(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal)))and (len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))>1)):
+            if(n==len(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal))):
+                n=len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))
+                value=value + ',' + x.l_pessoal
+            else:
+                n=len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))
+                value=x.l_pessoal
 
     classe.personal_tag=value
     #session.query(Classe).filter(Classe.id == Classe.id).update({Classe.personal_tag: value}, synchronize_session=False)

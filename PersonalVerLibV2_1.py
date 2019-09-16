@@ -5,11 +5,13 @@ from datetime import datetime, timedelta
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 
+import sys
 
 #inclusao para o checktables
 from sqlalchemy.schema import Table
 from sqlalchemy.schema import MetaData
 meta = MetaData()
+personalClasses={}
 
 Base=declarative_base()
 #nao necessario devido a funcao libInit
@@ -33,11 +35,12 @@ class PersonalData ( object ):
     def __init__(self, *args, **kwargs):
         #Inicializacoes
         #self.personal_tag=1
-        # introducao na lista da metatabela
-        uniadder(self)
-        Personal_tag_router(self)
         #testes para tag da validade
-        #self.validade=180                                                       #validade em dias 6 meses
+        #self.validade=180
+        # introducao na lista da metatabela
+        #uniadder(self)     outdated funtion
+        Personal_tag_router(self)
+                                                      #validade em dias 6 meses
         self.created_date=datetime.now().replace(microsecond=0)
 
         #Base.__init__(self, *args, **kwargs)
@@ -75,6 +78,29 @@ class Metatable (Base):
         self.data_source="client"
         self.validade=180
 
+# Mudar a versao de LIB se mudar
+
+class CustomMetaClass(type(Base)):
+    def __new__(meta, name, bases, dct):
+        print '-----------------------------------'
+        print "\n\nAllocating memory for class\n\n", name.lower()
+        print meta
+        print bases
+        print dct
+        for base in bases:
+            if (str(base)=="<class 'PersonalVerLibV2_1.PersonalData'>"):
+                personalClasses[name.lower()]=20
+        return super(CustomMetaClass, meta).__new__(meta, name, bases, dct)
+    def __init__(cls, name, bases, dct):
+        print '-----------------------------------'
+        print "\n\nInitializing class\n\n", name
+        print cls
+        print bases
+        print dct
+        super(CustomMetaClass, cls).__init__(name, bases, dct)
+
+
+
 
 
 
@@ -86,10 +112,14 @@ def libInit(engine_arg):
     engine  = engine_arg
     Base.metadata.create_all(bind=engine)
 
-
-
-
-
+#recebe uma sessao e faz dump das classes na metatabela inicializando
+def updatePersonnalClasses(session):
+    print "\n\nUpdating Metatable"
+    print personalClasses
+    for x in personalClasses:
+        data = Metatable(x)
+        session.add(data)
+        session.commit()
 
 
 
@@ -99,17 +129,18 @@ def libInit(engine_arg):
 
 
 
-#Coloca apenas um valor na metatable para guardar os nomes de classes privadas
-def uniadder(value):
-    print("\n\n Uniadder: %s\n\n"%(value.__tablename__))
-    Session = sessionmaker(bind=engine)
-    session= Session()
-    try:
-        data = Metatable(value.__tablename__)
-        session.add(data)
-        session.commit()
-    except:
-        print("iniadder:Dados ja guardados")
+#Coloca APENAS UMA VEZ na metatable para guardar os nomes de classes privadas (outdated com introducao de metaclass)
+# def uniadder(value):
+#     print("\n\n Uniadder: %s\n\n"%(value.__tablename__))
+#     Session = sessionmaker(bind=engine)
+#     session= Session()
+#     try:
+#         data = Metatable(value.__tablename__)
+#         session.add(data)
+#         session.commit()
+#         session.close()
+#     except:
+#         print("iniadder:Dados ja guardados")
 
 
 
@@ -123,8 +154,6 @@ def limpa(value):
         print("\n\n\n\nlimpa: TESTE VALIDADE   %s\n\n\n"%(prazo))
     date=datetime.now().replace(microsecond=0)
 
-
-
         # Debbug das datas e etc apagar
         # for data in session.query(value).filter((value.created_date+timedelta(days=prazo))<=date):
         #     print("\n\n\n\n TESTE DATAS  %s\n\n\n"%(data.created_date))
@@ -135,7 +164,7 @@ def limpa(value):
 
     session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).delete()
     session.commit()
-
+    session.close()
 
 
 # retorna uma lista de todos os dados de uma classe que estao expired
@@ -306,13 +335,20 @@ def find_shortest_path(graph, start, end, path=[]):
                     shortest = newpath
     return shortest
 
+
+
+################################################################################
+#PERSONAL TAG ROUTER
+#
+#recebe uma classe e introduz na sua personal tag a root ou roots mais proxima
+################################################################################
 grafo={}
 
 
 def Personal_tag_router(classe):
     n=0
     value="default"
-    #ERROR o primeiro e ultimo tao a dar mal ############# ja tentei se a data tiver vazia meter la classe.__tablename__
+    #Preocupacao com utilizacao de None assim
     for t in engine.table_names():
         creategraph(t)
 
@@ -328,14 +364,19 @@ def Personal_tag_router(classe):
             pass
         elif(((len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):      #tinha um if((find_shortest_path(grafo, classe.__tablename__, x.l_pessoal) is None) or(len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):
             value=classe.__tablename__
-        elif ((n<len(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal)))and (len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))>1)):
-            n=len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))
-            value=x.l_pessoal
+        elif ((n<=len(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal)))and (len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))>1)):
+            if(n==len(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal))):
+                n=len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))
+                value=value + ',' + x.l_pessoal
+            else:
+                n=len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))
+                value=x.l_pessoal
 
     classe.personal_tag=value
     #session.query(Classe).filter(Classe.id == Classe.id).update({Classe.personal_tag: value}, synchronize_session=False)
     session.commit()
     session.close()
+
 
 
 

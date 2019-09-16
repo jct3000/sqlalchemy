@@ -1,10 +1,16 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, orm, DateTime, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime, timedelta
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 
+import sys
+
+#inclusao para o checktables
+from sqlalchemy.schema import Table
+from sqlalchemy.schema import MetaData
+meta = MetaData()
 
 Base=declarative_base()
 #nao necessario devido a funcao libInit
@@ -19,7 +25,7 @@ class PersonalData ( object ):
     # __table_args__ = { 'mysql_engine' : 'InnoDB' }
     # __mapper_args__ = { 'always_refresh' : True }
 
-    personal_tag=  Column ( Integer )
+    personal_tag=  Column (String)
     created_date= Column(DateTime)
     #validade= Column ( Integer )
 
@@ -27,9 +33,10 @@ class PersonalData ( object ):
 
     def __init__(self, *args, **kwargs):
         #Inicializacoes
-        self.personal_tag=1
+        #self.personal_tag=1
         # introducao na lista da metatabela
         uniadder(self)
+        Personal_tag_router(self)
         #testes para tag da validade
         #self.validade=180                                                       #validade em dias 6 meses
         self.created_date=datetime.now().replace(microsecond=0)
@@ -130,6 +137,8 @@ def limpa(value):
     session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).delete()
     session.commit()
 
+
+
 # retorna uma lista de todos os dados de uma classe que estao expired
 def clean_list(value):
     Session = sessionmaker(bind=engine)
@@ -165,8 +174,6 @@ def show_val(value):
     return prazo
 
 
-
-
 #print se a classe dada for privada erro: se a classe e publica nao diz nda
 def is_private(class1):
     Session = sessionmaker(bind=engine)
@@ -174,13 +181,6 @@ def is_private(class1):
     for data in session.query(Metatable).filter(Metatable.l_pessoal==class1.__tablename__):
         print("\n\n\n\n is_private:CLASSE PRIVADA   \n\n\n")
     session.commit()
-
-
-
-
-
-
-
 
 # avisa se algum valor da metatabela se encontra por preencher
 def alerta_vazio():
@@ -199,11 +199,173 @@ def alerta_vazio():
         print("TESTE DE ALERTA")
     session.commit()
 
-#teste de funcao para BD OUTDATED
-# def adder():
-#     Session = sessionmaker(bind=engine)
-#     session= Session()
-#     person = Person(2,"bruno", "hotmail2")
-#     session.add(person)
-#     session.commit()
-#     #print("adder:Added one person\n")
+
+
+
+#################################################################################################
+#SHOW PRIVATE DATA GIVEN CLASS AND ID
+################################################################################################
+
+
+#ERROR: append with no idea of what the classe is coded no idea that as a classe.name
+
+def showclassdata(classe, id_aux):
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    objects = session.query(classe).filter(classe.id==id_aux)
+    #results=[]
+    results={}
+    aux=[]
+
+    for object in objects:
+        for key, value  in object.__dict__.items():
+            #print key, value
+            results.update( {str(key) : str(value)} )
+        results.pop('_sa_instance_state')
+        #results.append(str(object.__dict__.items()))# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
+        #results.append("["+str(object.__dict__.items()).split(",",2)[2])# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
+
+
+
+    relationship_list = [str(list(column.remote_side)[0]).split('.')[0] for column in inspect(classe).relationships]
+    aux.extend(relationship_list)
+    results.update( {'Relations' : aux} )
+    for relationship in relationship_list:
+        print("\n\n\n\n\n\n\n HERE \n\n\n\n\n\n")
+        #print(sys.modules[__name__])
+        #eval("webapp import *")
+        #print(type(eval(relationship.capitalize()))) # para saber o tipo aqui eval(relationship.capitalize())
+        #objects = session.query(relationship.capitalize()).filter(relationship.capitalize().id==id_aux)   #relatioship continua a ser string
+        #for object in objects:
+            #agrupar os resultados como em append anterior
+            #results.append(str(object.__dict__.items()))# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
+    session.close()
+    return results
+
+################################################################################
+#FUNCAO DE CREACAO E ESTUDO DE GRAFOS
+################################################################################
+
+
+def creategraph(t):
+    table = Table(t, meta, autoload=True, autoload_with=engine)
+    print("------------------")
+    print("Entrou na funcao com "+str(table))
+    print("------------------")
+    neighbors=[]
+    for fkey in table.foreign_keys:
+        fkey=str(fkey).split(".")[0]
+        aux=(fkey[13:])
+        print("foreign key "+aux)
+        neighbors.append(aux)
+    print("\n\n-----neighbours-----")
+    print(neighbors)
+    grafo[str(table)]=neighbors
+
+
+
+
+def find_path(graph, start, end, path=[]):
+    path = path + [start]
+    if start == end:
+        return path
+    if not graph.has_key(start):
+        return None
+    for node in graph[start]:
+        if node not in path:
+            newpath = find_path(graph, node, end, path)
+            if newpath: return newpath
+    return None
+
+def find_all_paths(graph, start, end, path=[]):
+    path = path + [start]
+    if start == end:
+        return [path]
+    if not graph.has_key(start):
+        return []
+    paths = []
+    for node in graph[start]:
+        if node not in path:
+            newpaths = find_all_paths(graph, node, end, path)
+            for newpath in newpaths:
+                paths.append(newpath)
+    return paths
+
+
+def find_shortest_path(graph, start, end, path=[]):
+    path = path + [start]
+    if start == end:
+        return path
+    if not graph.has_key(start):
+        return None
+    shortest = None
+    for node in graph[start]:
+        if node not in path:
+            newpath = find_shortest_path(graph, node, end, path)
+            if newpath:
+                if not shortest or len(newpath) < len(shortest):
+                    shortest = newpath
+    return shortest
+
+grafo={}
+
+
+def Personal_tag_router(classe):
+    n=0
+    value="default"
+    #Preocupacao com utilizacao de None assim
+    for t in engine.table_names():
+        creategraph(t)
+
+
+    #Metatable usage
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    data= session.query(Metatable).all()
+    for x in data:
+    #for t in engine.table_names():
+    #None part is useless TIRAR
+        if(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal) is None):
+            pass
+        elif(((len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):      #tinha um if((find_shortest_path(grafo, classe.__tablename__, x.l_pessoal) is None) or(len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):
+            value=classe.__tablename__
+        elif ((n<=len(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal)))and (len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))>1)):
+            if(n==len(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal))):
+                n=len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))
+                value=value + ',' + x.l_pessoal
+            else:
+                n=len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))
+                value=x.l_pessoal
+
+    classe.personal_tag=value
+    #session.query(Classe).filter(Classe.id == Classe.id).update({Classe.personal_tag: value}, synchronize_session=False)
+    session.commit()
+    session.close()
+
+
+
+
+
+###############################################################################
+#FUNCAO DE DESCENDENTES DIRETOS
+###############################################################################
+
+def find_direct_descend(graph, father, path=[]):
+    n=0
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    if(session.query(Metatable).filter_by(l_pessoal=father).scalar() is None):
+        return 'Public'
+    data= session.query(Metatable).all()
+    for t in data:
+        if((find_shortest_path(graph,t.l_pessoal,father)) is None or n<len(find_shortest_path(graph,t.l_pessoal,father))==1):
+            path=path
+        elif(n<len(find_shortest_path(graph,t.l_pessoal,father))):
+            n=len(find_shortest_path(graph,t.l_pessoal,father))
+            path=(find_shortest_path(graph,t.l_pessoal,father))
+    session.commit()
+    session.close()
+    return path
+
+
+###############################################################################

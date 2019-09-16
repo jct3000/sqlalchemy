@@ -386,6 +386,32 @@ def showperson(id):
 
 ####################################################################################################
 
+####################################################################################################
+# Funcao de testes APAGAR   USAR CREATE PRIMEIRO
+###################################################################################################
+
+
+@route('/test')
+def test():
+    aux=[]
+    dic={}
+    print("\n\n--------DESCENDENTES---------")
+    aux=find_direct_descend(grafo, 'person')
+
+    print(aux)
+    for t in aux:
+        print t
+        dic.update({t:eval(t.capitalize())})
+    print(dic)
+    print("teste tipo grade")
+    print(type(dic["grade"]))
+    print("\n\n--------DESCENDENTES Publico---------")
+    print(find_direct_descend(grafo, 'restaurant'))
+    return '<h1># TESTING</h1>'
+
+
+####################################################################################################
+
 @route('/showrestaurant/<id_r>') #get???   show de dados pessoais de um id restaurant
 def showrestaurant(id_r):
     Session = sessionmaker(bind=engine)

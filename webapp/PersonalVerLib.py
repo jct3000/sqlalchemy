@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 
+import sys
 
 Base=declarative_base()
 #nao necessario devido a funcao libInit
