@@ -60,7 +60,7 @@ class Restaurant (Base):
         self.adress=adress
 
 
-class Checkin(Base, PersonalData ):
+class Checkin(Base ):
     #introducao de metaclass
     __metaclass__ = CustomMetaClass
     __tablename__ = 'checkin'
@@ -80,7 +80,7 @@ class Checkin(Base, PersonalData ):
         return "<Checkin(description='%s', rating='%d')>" % (self.description, self.rating)
 
     def __init__(self, id_c, id, id_r, description, rating):
-        PersonalData.__init__(self)
+#        PersonalData.__init__(self)
         self.id_c=id_c
         self.id=id
         self.id_r=id_r
@@ -109,14 +109,15 @@ Base.metadata.create_all(bind=engine)
 
 Session = sessionmaker(bind=engine)
 
-
-# para deixar o campo a nulo usar None
-
 session= Session()
 
 
 #recebe uma sessao e faz dump das classes na metatabela inicializando (meter a seguir a sessionmaker)
 updatePersonnalClasses(session)
+
+###############################################################################
+# Introducao valores de testing
+###############################################################################
 
 
 person = Person(0,"joao", "hotmail" )
@@ -161,9 +162,6 @@ session.commit()
 # session.query(Person).filter(Person.id==0).delete()                           # Para apagar um objecto com querie
 # session.commit()                                                              # Para apagar um objecto com querie
 
-
-
-
 restaurant = Restaurant(1,"Dinner","street" )
 session.add(restaurant)
 session.commit()
@@ -195,9 +193,11 @@ session.close()
 
 
 
+###############################################################################
+#  testes das funcoes da lib
+###############################################################################
 
 
-                                                                    # testes das funcoes da lib
 
 #ambas as funcoes tem de ter algo na BD
 #teste do lista fora do prazo
@@ -210,24 +210,71 @@ print(results)
 #teste do show validade
 teste=show_val(Person)
 print("\n\n\n\n TESTES show_val: %d"%(teste))
+#teste do show goal
+teste=show_goal(Person)
+print("\n\n\n\n TESTES show_goal: %s"%(teste))
+#teste do show categorie
+teste=show_categorie(Person)
+print("\n\n\n\n TESTES show_categorie: %s"%(teste))
+#teste do show owner
+teste=show_data_owner(Person)
+print("\n\n\n\n TESTES show_owner: %s"%(teste))
+#teste do show source
+teste=show_data_source(Person)
+print("\n\n\n\n TESTES show_source: %s"%(teste))
+
+
+
+
 #teste do limpa expired data
 limpa(Person)
 
-
+# change_goal(Checkin,None)
+# change_categorie(Checkin,None)
+# change_categorie(Person,None)
 #teste do alerta_vazio
 alerta_vazio()
 
 
-#teste do change validade
+#teste do change Metadados
 change_val(Person,146)
 
+#teste do show Metadados
+teste=show_val(Person)
+print("\n\n\n\n TESTES show_val: %d"%(teste))
 
+
+#teste do change Metadados
+change_val(Checkin,120)
+
+
+change_goal(Checkin, "testegoal")
+change_categorie(Checkin, "teste categoria")
+change_data_owner(Checkin, "teste dono")
+change_data_source(Checkin, "teste source")
 
 
 
 #teste do show validade
-teste=show_val(Person)
-print("\n\n\n\n TESTES show_val: %d"%(teste))
+teste=show_val(Checkin)
+print("\n\n\n\n Checkin TESTES show_val: %d"%(teste))
+#teste do show goal
+teste=show_goal(Checkin)
+print("\n\n\n\n Checkin TESTES show_goal: %s"%(teste))
+#teste do show categorie
+teste=show_categorie(Checkin)
+print("\n\n\n\n Checkin TESTES show_categorie: %s"%(teste))
+#teste do show owner
+teste=show_data_owner(Checkin)
+print("\n\n\n\n Checkin TESTES show_owner: %s"%(teste))
+#teste do show source
+teste=show_data_source(Checkin)
+print("\n\n\n\n Checkin TESTES show_source: %s"%(teste))
+
+
+
+
+
 
 
 is_private(Person)
@@ -259,12 +306,18 @@ print("TABELAS NA BD FIM\n\n\n\n\n")
 
 
 
+
+
+###############################################################################
+#  print das tabelas
+###############################################################################
+
                                                                             #parte responsavel pelo teste de query
 Session = sessionmaker(bind=engine)
 session= Session()
 
 
-#teste para guardar set de privados
+
 metas = session.query(Metatable).all()
 for meta in metas:
     print ("\n\nTeste de metadados lista: %s proposito %s  categoria %s owner %s  origem  %s   validade %d  \n" %(meta.l_pessoal, meta.goal, meta.categorie, meta.data_owner, meta.data_source, meta.validade))
@@ -282,10 +335,10 @@ for restaurant in restaurants:
     print ("\n\nRestaurante com o nome %s id %d e a morada %s\n" %(restaurant.name, restaurant.id_r, restaurant.adress))
 
 
-print("\nCheckin data\n")                                                                              #last query erro
+print("\nCheckin data\n")
 checkins = session.query(Checkin).all()
 for checkin in checkins:
-    print ("\n\nTAG :%s ||||| checkin com o id %d da pessoa com id %d no restaurante de id %d Descricao %s e Qualificacao %d \n" %(checkin.personal_tag, checkin.id_c , checkin.id , checkin.id_r, checkin.description, checkin.rating))
+    print ("\n\nTAG :%s ||||| checkin com o id %d da pessoa com id %d no restaurante de id %d Descricao %s e Qualificacao %d DATA CRIACAO:%s \n" %(checkin.personal_tag, checkin.id_c , checkin.id , checkin.id_r, checkin.description, checkin.rating,checkin.created_date))
 
 session.close()
 
@@ -296,8 +349,11 @@ session.close()
 
 print(type(Person))
 print(isinstance(Checkin, PersonalData))
+print("\nbases\n")
+print(Restaurant.__bases__)
 print("\n\n--------DESCENDENTES---------")
 print(find_direct_descend(grafo, 'person'))
 
 print("\n\n--------DESCENDENTES Publico---------")
 print(find_direct_descend(grafo, 'restaurant'))
+#module_test()

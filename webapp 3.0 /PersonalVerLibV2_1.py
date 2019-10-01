@@ -98,8 +98,6 @@ class Metatable (Base):
 #codigo chamado na creaccao do classe
 ############################
 
-
-
 class CustomMetaClass(type(Base)):
     def __new__(meta, name, bases, dct):
         print '-----------------------------------'
@@ -136,45 +134,14 @@ class CustomMetaClass(type(Base)):
         #debugg##########
         #print aux_tag
         #################
-        bases, dct = Privitization(name, bases, aux_tag, personalClasses, dct)
-        print("bases after"+str(bases))
-        print("\n\ndct after\n\n"+str(dct))
-
-
-
-
-
+        Privitization(name, bases, aux_tag, personalClasses, dct)
         return super(CustomMetaClass, meta).__new__(meta, name, bases, dct)
-
     def __init__(cls, name, bases, dct):
         print '-----------------------------------'
         print "\n\nInitializing class\n\n", name
         print cls
         print bases
         print dct
-
-        # #################################################################
-        # #AQUI E FEITO O GRAFO A PARTIR DE dct e a lista personalClasses
-        # #################################################################
-        #  #debugg##########
-        # print '\n Vector Classes privadas'
-        # print (personalClasses)
-        # #################
-        # creategraph_lista(name.lower(),dct)
-        # aux_tag=Personal_tag_router_lista(name.lower(), grafo_lista, personalClasses)
-        # #debugg##########
-        # #print aux_tag
-        # #################
-        # bases, dct = Privitization(name, bases, aux_tag, personalClasses, dct)
-        # #debugg##########
-        # print("bases after"+str(bases))
-        # print("\n\ndct after\n\n"+str(dct))
-        # #################
-
-
-
-
-
         #############################################################
         #add argument to class by metaprograming
         ############################################################
@@ -183,11 +150,6 @@ class CustomMetaClass(type(Base)):
         # print "\nNew dictionary in init\n"
         # print dct
         # print '-----------------------------------'
-
-
-        # if PersonalData in bases:
-        #     dct["__original_init__"]=dct["__init__"]
-        #     #dct["__init__"]=our_personnalInit(self)     #cls?????
 
         super(CustomMetaClass, cls).__init__(name, bases, dct)
 
@@ -225,17 +187,12 @@ def updatePersonnalClasses(session):
         except:
             print "Warnig updatePersonnalClasses: Already exists in Metatable"
 
-############################################################################################################################################################################################
-# FUNCOES DE METAPROGRAMACAO
-############################################################################################################################################################################################
-
-
 #################################################################################################
 #PRIVITIZATION
 #
 #description:recebe nome, lista de classes pessoais bases e tag e coloca a a classe a extender da personal data se a tag for diferente de public
 ################################################################################################
-def Privitization( name, bases, tag, personalClasses,dct):  #cls
+def Privitization(name, bases, tag, personalClasses,dct):
     #Auto extend of a class to private
     if ((PersonalData not in bases) and (tag!="Public Class")):
         print '-----------------------------------'
@@ -247,21 +204,19 @@ def Privitization( name, bases, tag, personalClasses,dct):  #cls
         print"Inserting Personal List"
         personalClasses[name.lower()]=20
         print (personalClasses)
-        print("bases after"+str(bases))
         print '-----------------------------------'
-        dct["__original_init__"]=dct["__init__"]
-        dct["__init__"]=our_personnalInit    #cls
-    return bases ,dct
+        ############################################################
+        #add argument to class by metaprograming
+        ###########################################################
+        # dct['personal_tag']= Column('personal_tag', String(),default=tag)
+        # dct['created_date']= Column('created_date', DateTime(),default=datetime.now().replace(microsecond=0))
+        # print '-----------------------------------'
+        # print "\nNew dictionary in new\n"
+        # print dct
+        # print '-----------------------------------'
 
 
-#################################################################################################
-#OUR PERSONAL INIT
-#
-#description:funcao que modifica o construtor de classes privadas(excluindo roots) para correr o init da super classe PersonalData
-################################################################################################
-def our_personnalInit(self,  *kwargs):
-    PersonalData.__init__(self)
-    self.__original_init__(*kwargs)
+
 
 
 
