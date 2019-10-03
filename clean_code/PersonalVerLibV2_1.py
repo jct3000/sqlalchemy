@@ -32,28 +32,17 @@ class PersonalData ( object ):
     @declared_attr
     def __tablename__ ( cls ):
         return cls . __name__ . lower ()
-    #
-    # __table_args__ = { 'mysql_engine' : 'InnoDB' }
-    # __mapper_args__ = { 'always_refresh' : True }
-
     personal_tag=  Column (String)
     created_date= Column(DateTime)
-    #validade= Column ( Integer )
+
 
 
 
     def __init__(self, *args, **kwargs):
         #Inicializacoes
-        #self.personal_tag=1
-        #testes para tag da validade
-        #self.validade=180
-        # introducao na lista da metatabela
-        #uniadder(self)     outdated funtion
         Personal_tag_router(self)
-                                                      #validade em dias 6 meses
         self.created_date=datetime.now().replace(microsecond=0)
 
-        #Base.__init__(self, *args, **kwargs)
 
     @orm.reconstructor
     def init_on_load(self):                                                     #printa sempre que for buscar algo a BD
@@ -106,22 +95,7 @@ class CustomMetaClass(type(Base)):
         print "\n\nAllocating memory for class\n\n", name.lower()
         print meta
         print bases
-        #Auto extend of a class to private
-        # if PersonalData not in bases:
-        #     print '-----------------------------------'
-        #     print"Inserting Personal Data Base"
-        #     bases=bases +(PersonalData, )
-        #     print '-----------------------------------'
         print dct
-        #############################################################
-        #add argument to class by metaprograming
-        ############################################################
-        # dct['xpto']= Column('xpto', String(),default='TESTE')
-        # print '-----------------------------------'
-        # print "\nNew dictionary in new\n"
-        # print dct
-        # print '-----------------------------------'
-
         for base in bases:
             if (str(base)=="<class 'PersonalVerLibV2_1.PersonalData'>"):# Mudar a versao de LIB se mudar
                 personalClasses[name.lower()]=20
@@ -133,17 +107,7 @@ class CustomMetaClass(type(Base)):
         print (personalClasses)
         creategraph_lista(name.lower(),dct)
         aux_tag=Personal_tag_router_lista(name.lower(), grafo_lista, personalClasses)
-        #debugg##########
-        #print aux_tag
-        #################
         bases, dct = Privitization(name, bases, aux_tag, personalClasses, dct)
-        print("bases after"+str(bases))
-        print("\n\ndct after\n\n"+str(dct))
-
-
-
-
-
         return super(CustomMetaClass, meta).__new__(meta, name, bases, dct)
 
     def __init__(cls, name, bases, dct):
@@ -152,42 +116,9 @@ class CustomMetaClass(type(Base)):
         print cls
         print bases
         print dct
-
-        # #################################################################
-        # #AQUI E FEITO O GRAFO A PARTIR DE dct e a lista personalClasses
-        # #################################################################
-        #  #debugg##########
-        # print '\n Vector Classes privadas'
-        # print (personalClasses)
-        # #################
-        # creategraph_lista(name.lower(),dct)
-        # aux_tag=Personal_tag_router_lista(name.lower(), grafo_lista, personalClasses)
-        # #debugg##########
-        # #print aux_tag
-        # #################
-        # bases, dct = Privitization(name, bases, aux_tag, personalClasses, dct)
-        # #debugg##########
-        # print("bases after"+str(bases))
-        # print("\n\ndct after\n\n"+str(dct))
-        # #################
-
-
-
-
-
-        #############################################################
-        #add argument to class by metaprograming
-        ############################################################
-        # dct['foo']= Column('xpto', String())
-        # print '-----------------------------------'
-        # print "\nNew dictionary in init\n"
-        # print dct
-        # print '-----------------------------------'
-
-
         # if PersonalData in bases:
         #     dct["__original_init__"]=dct["__init__"]
-        #     #dct["__init__"]=our_personnalInit(self)     #cls?????
+        #     dct["__init__"]=our_personnalInit
 
         super(CustomMetaClass, cls).__init__(name, bases, dct)
 
@@ -247,7 +178,6 @@ def Privitization( name, bases, tag, personalClasses,dct):  #cls
         print"Inserting Personal List"
         personalClasses[name.lower()]=20
         print (personalClasses)
-        print("bases after"+str(bases))
         print '-----------------------------------'
         dct["__original_init__"]=dct["__init__"]
         dct["__init__"]=our_personnalInit    #cls
@@ -271,27 +201,6 @@ def our_personnalInit(self,  *kwargs):
 
 ############################################################################################################################################################################################
 
-
-#################################################################################################
-#UNIADDER (OUTDATED FUNC)
-#
-#description:Coloca APENAS UMA VEZ na metatable para guardar os nomes de classes privadas (outdated com introducao de metaclass)
-################################################################################################
-
-#
-# def uniadder(value):
-#     print("\n\n Uniadder: %s\n\n"%(value.__tablename__))
-#     Session = sessionmaker(bind=engine)
-#     session= Session()
-#     try:
-#         data = Metatable(value.__tablename__)
-#         session.add(data)
-#         session.commit()
-#         session.close()
-#     except:
-#         print("iniadder:Dados ja guardados")
-
-
 #################################################################################################
 #LIMPA (MUDAR NOME)
 #
@@ -306,15 +215,6 @@ def limpa(value):
         prazo=data.validade
         print("\n\n\n\nlimpa: TESTE VALIDADE   %s\n\n\n"%(prazo))
     date=datetime.now().replace(microsecond=0)
-
-        # Debbug das datas e etc apagar
-        # for data in session.query(value).filter((value.created_date+timedelta(days=prazo))<=date):
-        #     print("\n\n\n\n TESTE DATAS  %s\n\n\n"%(data.created_date))
-        #     cenas=data.created_date+timedelta(days=prazo)
-        #     print("\n\n\n\n TESTE DATAS2  %s\n\n\n"%(cenas))
-        #     session.query(value).filter(cenas>date).delete()
-        #     print("\n\n\n\n TESTE expressao  %r\n\n\n"%(cenas<date))
-
     session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).delete()
     session.commit()
     session.close()
@@ -332,7 +232,6 @@ def clean_list(value):
         prazo=data.validade
         print("\n\n\n\nclean_list: TESTE VALIDADE   %s\n\n\n"%(prazo))
     date=datetime.now().replace(microsecond=0)
-
     persons=session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).all()
     results=[]
     for person in persons:
@@ -413,7 +312,7 @@ def change_data_source(class1, value):
     Session = sessionmaker(bind=engine)
     session= Session()
     session.query(Metatable).filter(Metatable.l_pessoal== class1.__tablename__).update({Metatable.data_source: value}, synchronize_session=False)
-    print("\n\n _data_source: Origem dos dados modificado para %s\n\n\n"%(value))
+    print("\n\n Data_source: Origem dos dados modificado para %s\n\n\n"%(value))
     session.commit()
     session.close()
 
@@ -534,10 +433,15 @@ def alerta_vazio():
 #description: recebe uma classe e um id e devolve os dados desse objecto e dos objectos das classes descendem diretamente
 ################################################################################################
 
-def module_test():
-    for name, obj in inspect.getmembers(sys.modules[__name__]):
-        if inspect.isclass(obj):
-            print(name+","+obj)
+def module_test(modulo,classe,id):
+    print modulo
+    modulo=str(modulo)
+    print classe
+    classe=str(classe)
+    print id
+    #print(sys.modules["app1_4"].__dict__["Person"])
+
+
 #ERROR: append with no idea of what the classe is coded no idea that as a classe.name
 
 
@@ -596,27 +500,17 @@ def showclassdata(classe, id_aux):
 ################################################################################
 grafo_lista={}
 def creategraph_lista(name,dct,):
-    print("------------------")
-    print '\nLISTA\n'
     aux=str(dct.values())
     print aux
-    print("------------------")
     index= 0
     fathers=[]
     while index < len(aux):
         index = aux.find('ForeignKey(', index)
         if index == -1:
             break
-        #debbug apagar########
-        print('FK found at', index)
-        ########################
         index += 12
         fathers.append((aux[index:]).split('.',1)[0])
-    print("\n fathers of " +name)
-    print fathers
     grafo_lista[name]=fathers
-    print("\n Grafo da lista")
-    print grafo_lista
 
 
 
@@ -632,13 +526,7 @@ def Personal_tag_router_lista(name, grafo_lista, personalClasses):
     print("\n\nTAG LISTA\n\n")
     n=0
     value="Public Class"
-    #debugg##########
-    #print "NOME:"+name
-    #####################
     for x in personalClasses.keys():
-        #debugg##########
-        #print x
-        #################
         if(find_shortest_path(grafo_lista,name, x) is None):
             pass
         elif(((len(find_shortest_path(grafo_lista, name,x))==1))and(n==0)):
@@ -666,23 +554,11 @@ def Personal_tag_router_lista(name, grafo_lista, personalClasses):
 
 def creategraph(t):
     table = Table(t, meta, autoload=True, autoload_with=engine)
-    #debugg##########
-    print("------------------")
-    print("Entrou na funcao com "+str(table))
-    print("------------------")
-    ###############
     neighbors=[]
     for fkey in table.foreign_keys:
         fkey=str(fkey).split(".")[0]
         aux=(fkey[13:])
-        #debugg##########
-        print("foreign key "+aux)
-        #########################
         neighbors.append(aux)
-    #debugg##########
-    print("\n\n-----neighbours-----")
-    print(neighbors)
-    ################
     grafo[str(table)]=neighbors
 
 
@@ -759,7 +635,6 @@ grafo={}
 def Personal_tag_router(classe):
     n=0
     value="default"
-    #Preocupacao com utilizacao de None assim
     for t in engine.table_names():
         creategraph(t)
 
@@ -769,8 +644,6 @@ def Personal_tag_router(classe):
     session= Session()
     data= session.query(Metatable).all()
     for x in data:
-    #for t in engine.table_names():
-    #None part is useless TIRAR
         if(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal) is None):
             pass
         elif(((len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):      #tinha um if((find_shortest_path(grafo, classe.__tablename__, x.l_pessoal) is None) or(len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):
@@ -784,7 +657,6 @@ def Personal_tag_router(classe):
                 value=x.l_pessoal
 
     classe.personal_tag=value
-    #session.query(Classe).filter(Classe.id == Classe.id).update({Classe.personal_tag: value}, synchronize_session=False)
     session.commit()
     session.close()
 
