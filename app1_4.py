@@ -87,6 +87,44 @@ class Checkin(Base ):
         self.description=description
         self.rating=rating
 
+
+class Grade (Base):
+        #introducao de metaclass
+    __metaclass__ = CustomMetaClass
+    __tablename__ = 'grade'
+
+    id_g=Column('id_g', Integer, primary_key=True)
+    id_c= Column(Integer, ForeignKey('checkin.id_c'))
+    grade = Column('grade', Integer)
+
+
+    # def __repr__(self):
+    #    return "<Grade(grade='%d')>" % (self.grade)
+
+    def __init__(self, id_g, id_c, grade):                           #Parte de inicializacao da lib
+        self.id_g=id_g
+        self.id_c=id_c
+        self.grade=grade
+
+
+# class Teste (Base):
+#         #introducao de metaclass
+#     __metaclass__ = CustomMetaClass
+#     __tablename__ = 'teste'
+#
+#     id_t=Column('id_t', Integer, primary_key=True)
+#     id_g= Column(Integer, ForeignKey('grade.id_g'))
+#     number = Column('number', Integer)
+#
+#
+#     # def __repr__(self):
+#     #    return "<Grade(grade='%d')>" % (self.grade)
+#
+#     def __init__(self, id_t, id_g, number):                           #Parte de inicializacao da lib
+#         self.id_t=id_t
+#         self.id_g=id_g
+#         self.number=number
+
 ###############################################################################
 # Mudar a base em runtime
 ###############################################################################
@@ -178,14 +216,47 @@ checkin = Checkin(0,1 , 0 , "blabla", 3)
 session.add(checkin)
 session.commit()
 
+checkin = Checkin(2,0 , 0 , "teste", 2)
+session.add(checkin)
+session.commit()
+
+checkin = Checkin(3,0 , 0 , "teste222", 99)
+session.add(checkin)
+session.commit()
+
 checkin = Checkin(1,2 , 3 , "blabla2", 7)
 session.add(checkin)
 session.commit()
 
+grade=Grade(1, 3, 1111)
+session.add(grade)
+session.commit()
+
+grade=Grade(2, 2, 22222)
+session.add(grade)
+session.commit()
+
+grade=Grade(3, 2, 3333)
+session.add(grade)
+session.commit()
+
+grade=Grade(4, 1, 9)
+session.add(grade)
+session.commit()
 #Funcao de update de um valor o synchronize_session pode ter o valor 'evaluate'
 # session.query(Restaurant).filter(Restaurant.adress == "street").update({Restaurant.adress: "street2"}, synchronize_session=False)
 # session.commit()
 
+
+
+# teste=Teste(1, 2, 7777)
+# session.add(teste)
+# session.commit()
+#
+#
+# teste=Teste(2, 4, 0000)
+# session.add(teste)
+# session.commit()
 
 session.close()
 
@@ -361,5 +432,4 @@ print(ordered_find_direct_descend(grafo, 'restaurant'))
 showclassdata(Person, 0)
 #Testes dos modulos etc
 #print(sys.modules["__main__"].__dict__["Person"])
-#inspect.isclass(sys.modules["app1_4"].__dict__["Person"])
-#module_test("app1_4.py", Person, 2)
+#inspect.isclass(sys.modules["__main__"].__dict__["Person"])

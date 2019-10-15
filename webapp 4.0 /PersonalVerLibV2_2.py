@@ -523,9 +523,9 @@ def showclassdata( classe, id_aux, modulo="__main__"):
     results2={}
     n=0
     ##debugg######
-    print id_pk
-    print type(id_pk)
-    print(sys.modules[modulo].__dict__["Person"])
+    # print id_pk
+    # print type(id_pk)
+    # print(sys.modules[modulo].__dict__["Person"])
     ##################
     #2guardar resultados da 1 pesquisa
     objects = session.query(classe).filter(classe.__dict__[id_pk]==id_aux)   #nao pode ser classe.id tem de ver a pk e e essa classe.id_pk mas isso n da
@@ -546,14 +546,15 @@ def showclassdata( classe, id_aux, modulo="__main__"):
     descendentes=[]
     descendentes=ordered_find_direct_descend(grafo,classe.__tablename__)
     #5 apaga o pai
-    del descendentes[1]
+    if len(descendentes)>1:
+        del descendentes[1]
     ##debugg#########
-    print('\n\n\n---------------')
-    print("primary keys")
-    print keys
-    print("descendentes")
+    # print('\n\n\n---------------')
+    # print("primary keys")
+    # print keys
+    # print("descendentes")
     print descendentes
-    print descendentes[2]
+    # print descendentes[2]
     ################
     aux=[]
     aux2=[]
@@ -578,24 +579,23 @@ def showclassdata( classe, id_aux, modulo="__main__"):
         aux2=[]
         id_pk=new_id_pk
         print results
-
 #ERRO se ele pesquisar um classe e nao tiver nada mesmo assim aumenta o n exemplo devia ser grade_0 mas e grade_1
 #tentar ordenar
 
     ##debugg#########
-    print descendentes[t].capitalize()
+    # print descendentes[t].capitalize()
     ###############
         ##debbug#####
-    print type(sys.modules[modulo].__dict__[descendentes[t].capitalize()])
-    print id_pk
-    print keys["person_0"]
-    print keys
-    print "\nDescarga resultados"
+    # print type(sys.modules[modulo].__dict__[descendentes[t].capitalize()])
+    # print id_pk
+    # print keys["person_0"]
+    # print keys
+    # print "\nDescarga resultados"
     for t in results2:
         print t
         print results2[t]
-    print "\nResultado especifico"
-    print results2["grade_1"]
+    # print "\nResultado especifico"
+    # print results2["grade_1"]
         ############
     ####################
 
