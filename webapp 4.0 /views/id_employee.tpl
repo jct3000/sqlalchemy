@@ -3,4 +3,6 @@
 <p>Show personal data:<a href="http://127.0.0.1:8080/showemployee/{{id_e}}"> Employee Personal Data </a></p>
 <p>Checkin:<a href="http://127.0.0.1:8080/employee_checkin/{{id_e}}/{{id_s}}/{{id_r}}"> Employee Checkin </a></p>
 <p>Checkout:<a href="http://127.0.0.1:8080/employee_checkout/{{id_e}}/{{id_s}}/{{id_r}}"> Employee Checkout </a></p>
+<h2>Show employee personal data:</h2><br>
+<p>Show personal all data:<a href="http://127.0.0.1:8080/show_data_employee/{{id_e}}"> Personal Data </a></p>
 <br><p>Return:<a href="http://127.0.0.1:8080/client"> Return </a></p>

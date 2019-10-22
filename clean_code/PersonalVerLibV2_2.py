@@ -32,15 +32,20 @@ class PersonalData ( object ):
     @declared_attr
     def __tablename__ ( cls ):
         return cls . __name__ . lower ()
+    #
+    # __table_args__ = { 'mysql_engine' : 'InnoDB' }
+    # __mapper_args__ = { 'always_refresh' : True }
+
     personal_tag=  Column (String)
     created_date= Column(DateTime)
-
+    #validade= Column ( Integer )
 
 
 
     def __init__(self, *args, **kwargs):
         #Inicializacoes
         Personal_tag_router(self)
+                                                      #validade em dias 6 meses
         self.created_date=datetime.now().replace(microsecond=0)
 
 
@@ -96,8 +101,7 @@ class CustomMetaClass(type(Base)):
         print meta
         print bases
         print dct
-        for base in bases:
-            if (str(base)=="<class 'PersonalVerLibV2_1.PersonalData'>"):# Mudar a versao de LIB se mudar
+        if PersonalData in bases:
                 personalClasses[name.lower()]=20
 
         #################################################################
@@ -108,6 +112,13 @@ class CustomMetaClass(type(Base)):
         creategraph_lista(name.lower(),dct)
         aux_tag=Personal_tag_router_lista(name.lower(), grafo_lista, personalClasses)
         bases, dct = Privitization(name, bases, aux_tag, personalClasses, dct)
+        #introducao da inicializacao de personal data tags em todas as classes
+        if PersonalData in bases:
+            dct["__original_init__"]=dct["__init__"]
+            dct["__init__"]=our_personnalInit
+        print("bases after"+str(bases))
+        print("\n\ndct after\n\n"+str(dct))
+
         return super(CustomMetaClass, meta).__new__(meta, name, bases, dct)
 
     def __init__(cls, name, bases, dct):
@@ -116,9 +127,7 @@ class CustomMetaClass(type(Base)):
         print cls
         print bases
         print dct
-        # if PersonalData in bases:
-        #     dct["__original_init__"]=dct["__init__"]
-        #     dct["__init__"]=our_personnalInit
+
 
         super(CustomMetaClass, cls).__init__(name, bases, dct)
 
@@ -178,9 +187,8 @@ def Privitization( name, bases, tag, personalClasses,dct):  #cls
         print"Inserting Personal List"
         personalClasses[name.lower()]=20
         print (personalClasses)
+        print("bases after"+str(bases))
         print '-----------------------------------'
-        dct["__original_init__"]=dct["__init__"]
-        dct["__init__"]=our_personnalInit    #cls
     return bases ,dct
 
 
@@ -201,6 +209,9 @@ def our_personnalInit(self,  *kwargs):
 
 ############################################################################################################################################################################################
 
+
+
+
 #################################################################################################
 #LIMPA (MUDAR NOME)
 #
@@ -215,6 +226,7 @@ def limpa(value):
         prazo=data.validade
         print("\n\n\n\nlimpa: TESTE VALIDADE   %s\n\n\n"%(prazo))
     date=datetime.now().replace(microsecond=0)
+
     session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).delete()
     session.commit()
     session.close()
@@ -232,6 +244,7 @@ def clean_list(value):
         prazo=data.validade
         print("\n\n\n\nclean_list: TESTE VALIDADE   %s\n\n\n"%(prazo))
     date=datetime.now().replace(microsecond=0)
+
     persons=session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).all()
     results=[]
     for person in persons:
@@ -312,7 +325,7 @@ def change_data_source(class1, value):
     Session = sessionmaker(bind=engine)
     session= Session()
     session.query(Metatable).filter(Metatable.l_pessoal== class1.__tablename__).update({Metatable.data_source: value}, synchronize_session=False)
-    print("\n\n Data_source: Origem dos dados modificado para %s\n\n\n"%(value))
+    print("\n\n _data_source: Origem dos dados modificado para %s\n\n\n"%(value))
     session.commit()
     session.close()
 
@@ -392,7 +405,10 @@ def show_data_source(class1):
 def is_private(class1):
     Session = sessionmaker(bind=engine)
     session= Session()
-    for data in session.query(Metatable).filter(Metatable.l_pessoal==class1.__tablename__):
+    data=session.query(Metatable).filter(Metatable.l_pessoal==class1.__tablename__).count()
+    if data is 0:
+        print("\n\n\n\n is_private:CLASSE PUBLICA   \n\n\n")
+    else:
         print("\n\n\n\n is_private:CLASSE PRIVADA   \n\n\n")
     session.commit()
     session.close()
@@ -433,53 +449,108 @@ def alerta_vazio():
 #description: recebe uma classe e um id e devolve os dados desse objecto e dos objectos das classes descendem diretamente
 ################################################################################################
 
-def module_test(modulo,classe,id):
-    print modulo
-    modulo=str(modulo)
-    print classe
-    classe=str(classe)
-    print id
-    #print(sys.modules["app1_4"].__dict__["Person"])
 
 
-#ERROR: append with no idea of what the classe is coded no idea that as a classe.name
+#ERROR: so faz um de cada
 
 
 
 
 
-def showclassdata(classe, id_aux):
+def showclassdata( classe, id_aux, modulo="__main__"):
+    print('\n\n\n---------------')
+    print("showclassdata")
     Session = sessionmaker(bind=engine)
     session= Session()
-    objects = session.query(classe).filter(classe.id==id_aux)
-    #results=[]
+    #1 saber a primary key da 1 classe
+    id_pk=inspect(classe).primary_key[0].name
     results={}
-    aux=[]
-
+    results2={}
+    n=0
+    ##debugg######
+    print id_pk
+    print type(id_pk)
+    print(sys.modules[modulo].__dict__["Person"])
+    ##################
+    #2guardar resultados da 1 pesquisa
+    objects = session.query(classe).filter(classe.__dict__[id_pk]==id_aux)   #nao pode ser classe.id tem de ver a pk e e essa classe.id_pk mas isso n da
     for object in objects:
         for key, value  in object.__dict__.items():
             #print key, value
             results.update( {str(key) : str(value)} )
         results.pop('_sa_instance_state')
-        #results.append(str(object.__dict__.items()))# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
-        #results.append("["+str(object.__dict__.items()).split(",",2)[2])# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
+    print results
+    results2[object.__tablename__+"_"+str(n)]=results.copy()
+    results.clear()
+    ####################
+    #3guarda a chaves primarias e a classe correspondente
+    keys={}
+    keys[classe.__tablename__+"_"+str(n)]={id_pk : id_aux}
 
+    #4 ve os descendentes e guarda
+    descendentes=[]
+    descendentes=ordered_find_direct_descend(grafo,classe.__tablename__)
+    #5 apaga o pai
+    del descendentes[1]
+    ##debugg#########
+    print('\n\n\n---------------')
+    print("primary keys")
+    print keys
+    print("descendentes")
+    print descendentes
+    print descendentes[2]
+    ################
+    aux=[]
+    aux2=[]
+    aux.append(id_aux)
+    for t in descendentes:
+        n=0
+        for x in aux:
+            objects = session.query(sys.modules[modulo].__dict__[descendentes[t].capitalize()]).filter(sys.modules[modulo].__dict__[descendentes[t].capitalize()].__dict__[id_pk]==x)   #nao pode ser classe.id tem de ver a pk e e essa classe.id_pk mas isso n da
+            new_id_pk=inspect(sys.modules[modulo].__dict__[descendentes[t].capitalize()]).primary_key[0].name
+            for object in objects:
+                keys[object.__tablename__+"_"+str(n)]={new_id_pk : object.__dict__[new_id_pk]}
+                aux2.append(object.__dict__[new_id_pk])
+                for key, value  in object.__dict__.items():
+                    #print key, value
+                    results.update( {str(key) : str(value)} )
+                results.pop('_sa_instance_state')
+                results2[object.__tablename__+"_"+str(n)]=results.copy()
+                results.clear()
+                n=n+1
+        aux=[]
+        aux=aux2
+        aux2=[]
+        id_pk=new_id_pk
+        print results
 
+#ERRO se ele pesquisar um classe e nao tiver nada mesmo assim aumenta o n exemplo devia ser grade_0 mas e grade_1
+#tentar ordenar
 
-    relationship_list = [str(list(column.remote_side)[0]).split('.')[0] for column in inspect(classe).relationships]
-    aux.extend(relationship_list)
-    results.update( {'Relations' : aux} )
-    for relationship in relationship_list:
-        print("\n\n\n\n\n\n\n HERE \n\n\n\n\n\n")
-        #print(sys.modules[__name__])
-        #eval("webapp import *")
-        #print(type(eval(relationship.capitalize()))) # para saber o tipo aqui eval(relationship.capitalize())
-        #objects = session.query(relationship.capitalize()).filter(relationship.capitalize().id==id_aux)   #relatioship continua a ser string
-        #for object in objects:
-            #agrupar os resultados como em append anterior
-            #results.append(str(object.__dict__.items()))# maneira melhor se tirar o str posso fazer pop mas deixa de ser string e o data time passa se com o jason
+    ##debugg#########
+    print descendentes[t].capitalize()
+    ###############
+        ##debbug#####
+    print type(sys.modules[modulo].__dict__[descendentes[t].capitalize()])
+    print id_pk
+    print keys["person_0"]
+    print keys
+    print "\nDescarga resultados"
+    for t in results2:
+        print t
+        print results2[t]
+    print "\nResultado especifico"
+    print results2["grade_1"]
+        ############
+    ####################
     session.close()
-    return results
+    return results2
+
+
+
+
+
+
 
 
 
@@ -500,17 +571,27 @@ def showclassdata(classe, id_aux):
 ################################################################################
 grafo_lista={}
 def creategraph_lista(name,dct,):
+    print("------------------")
+    print '\nLISTA\n'
     aux=str(dct.values())
     print aux
+    print("------------------")
     index= 0
     fathers=[]
     while index < len(aux):
         index = aux.find('ForeignKey(', index)
         if index == -1:
             break
+        #debbug apagar########
+        print('FK found at', index)
+        ########################
         index += 12
         fathers.append((aux[index:]).split('.',1)[0])
+    print("\n fathers of " +name)
+    print fathers
     grafo_lista[name]=fathers
+    print("\n Grafo da lista")
+    print grafo_lista
 
 
 
@@ -526,7 +607,13 @@ def Personal_tag_router_lista(name, grafo_lista, personalClasses):
     print("\n\nTAG LISTA\n\n")
     n=0
     value="Public Class"
+    #debugg##########
+    #print "NOME:"+name
+    #####################
     for x in personalClasses.keys():
+        #debugg##########
+        #print x
+        #################
         if(find_shortest_path(grafo_lista,name, x) is None):
             pass
         elif(((len(find_shortest_path(grafo_lista, name,x))==1))and(n==0)):
@@ -554,11 +641,23 @@ def Personal_tag_router_lista(name, grafo_lista, personalClasses):
 
 def creategraph(t):
     table = Table(t, meta, autoload=True, autoload_with=engine)
+    #debugg##########
+    print("------------------")
+    print("Entrou na funcao com "+str(table))
+    print("------------------")
+    ###############
     neighbors=[]
     for fkey in table.foreign_keys:
         fkey=str(fkey).split(".")[0]
         aux=(fkey[13:])
+        #debugg##########
+        print("foreign key "+aux)
+        #########################
         neighbors.append(aux)
+    #debugg##########
+    print("\n\n-----neighbours-----")
+    print(neighbors)
+    ################
     grafo[str(table)]=neighbors
 
 
@@ -635,6 +734,7 @@ grafo={}
 def Personal_tag_router(classe):
     n=0
     value="default"
+    #Preocupacao com utilizacao de None assim
     for t in engine.table_names():
         creategraph(t)
 
@@ -644,6 +744,8 @@ def Personal_tag_router(classe):
     session= Session()
     data= session.query(Metatable).all()
     for x in data:
+    #for t in engine.table_names():
+    #None part is useless TIRAR
         if(find_shortest_path(grafo, classe.__tablename__, x.l_pessoal) is None):
             pass
         elif(((len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):      #tinha um if((find_shortest_path(grafo, classe.__tablename__, x.l_pessoal) is None) or(len(find_shortest_path(grafo, classe.__tablename__,x.l_pessoal))==1))and(n==0)):
@@ -657,6 +759,7 @@ def Personal_tag_router(classe):
                 value=x.l_pessoal
 
     classe.personal_tag=value
+    #session.query(Classe).filter(Classe.id == Classe.id).update({Classe.personal_tag: value}, synchronize_session=False)
     session.commit()
     session.close()
 
@@ -670,7 +773,8 @@ def Personal_tag_router(classe):
 #Desciption: recebe um grafo e um nome classe e devolve o caminho pelos descendentes directos ate a folha da arvore
 ###############################################################################
 
-def find_direct_descend(graph, father, path=[]):
+
+def ordered_find_direct_descend(graph, father, path=[]):
     n=0
     Session = sessionmaker(bind=engine)
     session= Session()
@@ -683,9 +787,12 @@ def find_direct_descend(graph, father, path=[]):
         elif(n<len(find_shortest_path(graph,t.l_pessoal,father))):
             n=len(find_shortest_path(graph,t.l_pessoal,father))
             path=(find_shortest_path(graph,t.l_pessoal,father))
+    path2={}
+    for t in path:
+        path2[len(find_shortest_path(graph,t,father))]=t
+
     session.commit()
     session.close()
-    return path
-
+    return path2
 
 ###############################################################################

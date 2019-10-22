@@ -392,7 +392,10 @@ def showperson(id):
     results5=showclassdata(Person, id)
     return results5#{'Personal Data': results5}#'<h1>Personal Page of id  {0}</h1>'.format(id)
 
-
+@route('/show_data_employee/<id>') #test so 41
+def showemploye(id):
+    results5=showclassdata(Employee, id)
+    return results5#{'Personal Data': results5}#'<h1>Personal Page of id  {0}</h1>'.format(id)
 ####################################################################################################
 
 
@@ -636,6 +639,9 @@ def create():
     session.add(grade)
     session.commit()
     grade = Grade(41,40,31, 999 )
+    session.add(grade)
+    session.commit()
+    grade = Grade(42,41,31, 9999 )
     session.add(grade)
     session.commit()
 #### teste de funcao HIDE pesquisar com 52

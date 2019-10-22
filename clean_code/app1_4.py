@@ -5,17 +5,17 @@ from datetime import datetime, timedelta
 # inclusao de classe geral de personal data
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.declarative.api import DeclarativeMeta
-import sys
-from PersonalVerLibV2_1 import *
-#import of app classes
-from DML import *
 
+from PersonalVerLibV2_2 import *
+from DML import *
+import sys
 
 engine = create_engine('sqlite:///user.db', echo=True)                         # ('sqlite:///:memory:', echo=True)   --- coloca a BD em memoria  se mudar para algo tipo user.db cria em file na dir
 
 
 #CHAMAR SEMPRE funcao de inicializacao da lib com o mesmo engine que a app
 libInit(engine)
+
 
 
 # Cria todas as tabelas e classes referentes a aplicacao
@@ -29,67 +29,81 @@ Base.metadata.create_all(bind=engine)
                                                     #Parte responsavel pela introducao dos objectos para a DB
 
 Session = sessionmaker(bind=engine)
+
 session= Session()
+
+
 #recebe uma sessao e faz dump das classes na metatabela inicializando (meter a seguir a sessionmaker)
 updatePersonnalClasses(session)
 
-
-
-
-
 ###############################################################################
-# Data Base Populating
+# Introducao valores de testing-populating the BD
 ###############################################################################
+
 
 person = Person(0,"joao", "hotmail" )
 session.add(person)
 session.commit()
-
-
 person = Person(1,"miguel O VELHO", "gemail" )
 #Muda data de validade
 date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
 person.created_date= date-timedelta(days=18000)
 session.add(person)
 session.commit()
-
 person = Person(5,"miguel O SEGUNDO VELHO", "gemail900000" )
 #Muda data de validade
 date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
 person.created_date= date-timedelta(days=18000)
 session.add(person)
 session.commit()
-
 person = Person(2,"bruno", "hotmail2")
 session.add(person)
 session.commit()
-
 person = Person(3,"Manuel", "hotmail45")
 session.add(person)
 session.commit()
-
 person = Person(4,"Andre", "hotmail100")
 session.add(person)
 session.commit()
-
 restaurant = Restaurant(1,"Dinner","street" )
 session.add(restaurant)
 session.commit()
-
 restaurant = Restaurant(3,"MAC","Lisboa" )
 session.add(restaurant)
 session.commit()
-
 restaurant = Restaurant(2,"Pizza","Benfica" )
 session.add(restaurant)
 session.commit()
-
 checkin = Checkin(0,1 , 0 , "blabla", 3)
+session.add(checkin)
+session.commit()
+
+checkin = Checkin(2,0 , 0 , "teste", 2)
+session.add(checkin)
+session.commit()
+
+checkin = Checkin(3,0 , 0 , "teste222", 99)
 session.add(checkin)
 session.commit()
 
 checkin = Checkin(1,2 , 3 , "blabla2", 7)
 session.add(checkin)
+session.commit()
+
+grade=Grade(1, 3, 1111)
+session.add(grade)
+session.commit()
+
+grade=Grade(2, 2, 22222)
+session.add(grade)
+session.commit()
+
+grade=Grade(3, 2, 3333)
+session.add(grade)
+session.commit()
+
+grade=Grade(4, 1, 9)
+session.add(grade)
 session.commit()
 
 session.close()
@@ -99,13 +113,12 @@ session.close()
 
 
 ###############################################################################
-#  PersonalVerLIB Function testing
+#  testes das funcoes da lib
 ###############################################################################
 
 
 
 #ambas as funcoes tem de ter algo na BD
-
 #teste do lista fora do prazo
 print("\n\n\n\n\n  TESTES LISTA FORA PRAZO")
 results=[]
@@ -142,7 +155,7 @@ limpa(Person)
 alerta_vazio()
 
 
-#teste do change validade
+#teste do change Metadados
 change_val(Person,146)
 
 #teste do show Metadados
@@ -178,13 +191,18 @@ teste=show_data_source(Checkin)
 print("\n\n\n\n Checkin TESTES show_source: %s"%(teste))
 
 
+
+
+
+
+
 is_private(Person)
 is_private(Restaurant)
 is_private(Checkin)
 
 
 
-#FAZER FUNCAO QUE VEJA AS TABELAS E DEVOLVA AO PROGRAMADOR ALGO???
+
 #ve as tabelas que tao na BD   APAGAR
 print("\n\n\n\nTABELAS NA BD\n")
 print (engine.table_names())
@@ -204,18 +222,17 @@ print("\n\n\n\nRELACOES NA BD man 2")
 relationship_list = [str(list(column.remote_side)[0]).split('.')[0] for column in inspect(Person).relationships]
 print (relationship_list)
 print("TABELAS NA BD FIM\n\n\n\n\n")
-
-
+print("\n\n\n\nPRIMARY KEY\n\n")
+for key in inspect(Person).primary_key:
+    print key.name
 
 
 
 ###############################################################################
-#TABLES PRINTING
-#
-#parte responsavel pelo teste de query
+#  print das tabelas
 ###############################################################################
 
-
+                                                                            #parte responsavel pelo teste de query
 Session = sessionmaker(bind=engine)
 session= Session()
 
@@ -255,14 +272,12 @@ print(isinstance(Checkin, PersonalData))
 print("\nbases\n")
 print(Restaurant.__bases__)
 print("\n\n--------DESCENDENTES---------")
-print(find_direct_descend(grafo, 'person'))
+print(ordered_find_direct_descend(grafo, 'person'))
 
 print("\n\n--------DESCENDENTES Publico---------")
-print(find_direct_descend(grafo, 'restaurant'))
+print(ordered_find_direct_descend(grafo, 'restaurant'))
 
-
+showclassdata(Person, 0)
 #Testes dos modulos etc
-#print(sys.modules["app1_4"].__dict__["Person"])
-#print(sys.modules["app1_4"].__dict__["Person"])
-#inspect.isclass(sys.modules["app1_4"].__dict__["Person"])
-#module_test("app1_4.py", Person, 2)
+#print(sys.modules["__main__"].__dict__["Person"])
+#inspect.isclass(sys.modules["__main__"].__dict__["Person"])

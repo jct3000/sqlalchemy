@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.declarative.api import DeclarativeMeta
 
 
-from PersonalVerLibV2_1 import *
+from PersonalVerLibV2_2 import *
 
 ###############################################################################
 # DML- Data Manipulation Language
@@ -73,7 +73,7 @@ class Restaurant (Base):
 #########################
 #CHECKIN
 #
-#PRIVATE CLASS-LEAF
+#PRIVATE CLASS-intermedia
 ############################
 class Checkin(Base ):
     #insert of metaclass
@@ -97,3 +97,46 @@ class Checkin(Base ):
         self.id_r=id_r
         self.description=description
         self.rating=rating
+
+#########################
+#GRADE
+#
+#PRIVATE CLASS-LEAF
+############################
+
+class Grade (Base):
+        #introducao de metaclass
+    __metaclass__ = CustomMetaClass
+    __tablename__ = 'grade'
+
+    id_g=Column('id_g', Integer, primary_key=True)
+    id_c= Column(Integer, ForeignKey('checkin.id_c'))
+    grade = Column('grade', Integer)
+
+
+    # def __repr__(self):
+    #    return "<Grade(grade='%d')>" % (self.grade)
+
+    def __init__(self, id_g, id_c, grade):                           #Parte de inicializacao da lib
+        self.id_g=id_g
+        self.id_c=id_c
+        self.grade=grade
+
+
+# class Teste (Base):
+#         #introducao de metaclass
+#     __metaclass__ = CustomMetaClass
+#     __tablename__ = 'teste'
+#
+#     id_t=Column('id_t', Integer, primary_key=True)
+#     id_g= Column(Integer, ForeignKey('grade.id_g'))
+#     number = Column('number', Integer)
+#
+#
+#     # def __repr__(self):
+#     #    return "<Grade(grade='%d')>" % (self.grade)
+#
+#     def __init__(self, id_t, id_g, number):                           #Parte de inicializacao da lib
+#         self.id_t=id_t
+#         self.id_g=id_g
+#         self.number=number
