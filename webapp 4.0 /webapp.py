@@ -575,14 +575,14 @@ def create():
     #person.personal_tag=1
     session.add(person)
     session.commit()
-    person = Person(31,"miguel O VELHO", "gemail" )
+    person = Person(31,"Michael Old", "test@mail.com" )
     #person.personal_tag=1
     #Muda data de validade
     date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
     person.created_date= date-timedelta(days=18000)
     session.add(person)
     session.commit()
-    person = Person(35,"miguel O SEGUNDO VELHO", "gemail900000" )
+    person = Person(35,"Peter Dusk", "test2@mail.com" )
     #person.personal_tag=1
     #Muda data de validade
     date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
@@ -619,7 +619,7 @@ def create():
     employee = Employee(41,"trabalhador2", "sapo2")
     session.add(employee)
     session.commit()
-    employee = Employee(42,"trabalhador VELHO", "sapo900000" )
+    employee = Employee(42,"Anna Feng", "test3@mail.com" )
     #employee.personal_tag=1
     #Muda data de validade
     date=datetime(datetime.today().year,datetime.today().month, datetime.today().day,datetime.today().hour,datetime.today().minute,datetime.today().second)
@@ -645,19 +645,19 @@ def create():
     session.add(grade)
     session.commit()
 #### teste de funcao HIDE pesquisar com 52
-    person = Person(52,"bruno escondido", "hotmail9999")
+    person = Person(52,"Steve Hide", "something@mail.com")
     session.add(person)
     session.commit()
-    checkin = Checkin(50,52 , 33 , "blabla2", 7777771)
+    checkin = Checkin(50,52 , 33 , "dinner", 4)
     session.add(checkin)
     session.commit()
-    checkin = Checkin(51,52 , 33 , "blabla3", 7777772)
+    checkin = Checkin(51,52 , 33 , "lunch", 3)
     session.add(checkin)
     session.commit()
-    grade = Grade(51,40,50, 666666662 )
+    grade = Grade(51,40,50, 3 )
     session.add(grade)
     session.commit()
-    grade = Grade(52,41,50, 666666661 )
+    grade = Grade(52,41,50, 5 )
     session.add(grade)
     session.commit()
 #######
