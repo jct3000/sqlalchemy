@@ -526,10 +526,10 @@ def showcategorie():
     return "The categorie of the data of class person is {0} ".format(result)
 #   TEM DE TER ALGUMA PESSOA NA TABELA
 
-# @route('/showdataowner')   # lista goal
-# def showdataownerl():
-#     result=show_data_owner(Person)
-#     return "The data owner of the data of class person is {0} ".format(result)
+@route('/showdataowner')   # lista goal
+def showdataownerl():
+    result=show_data_owner(Person)
+    return "The data owner of the data of class person is {0} ".format(result)
 
 #   TEM DE TER ALGUMA PESSOA NA TABELA
 @route('/showdatasource')   # lista goal
@@ -542,19 +542,55 @@ def showdatasource():
 ###############################################################################
 #FUNTIONS OF CHANGE VALUES ADMIN
 ###############################################################################
-@route('/change_val_person')#pagina inscrever novo empregado
+@route('/change_val_person')#mudanca de val
 def change_val_person():
     return template('change_val_person')
 
-@post('/doform_change_val_person')   #formulario de log in restaurant
+@post('/doform_change_val_person')
 def change_val_person():
     value = request.forms.get('value')
     change_val(Person, int(value))
     return "Value changed"
 
+@route('/change_cat_person')#mudanca de categoria
+def change_cat_person():
+    return template('change_categorie_person')
 
+@post('/doform_change_cat_person')
+def change_cat_person():
+    value = request.forms.get('value')
+    change_categorie(Person, str(value))
+    return "Value changed"
 
+@route('/change_goal_person')#mudanca de vgoal
+def change_goal_person():
+    return template('change_goal_person')
 
+@post('/doform_change_goal_person')
+def change_goal_person():
+    value = request.forms.get('value')
+    change_goal(Person, str(value))
+    return "Value changed"
+
+@route('/change_data_owner_person')#mudanca de data owner
+def change_data_owner_person():
+    return template('change_data_owner_person')
+
+@post('/doform_change_data_owner_person')
+def change_data_owner_person():
+    value = request.forms.get('value')
+    change_data_owner(Person, str(value))
+    return "Value changed"
+
+@route('/change_data_source_person')#mudanca de data source
+def change_data_source_person():
+    return template('change_data_source_person')
+
+@post('/doform_change_data_source_person')
+def change_data_source_person():
+    value = request.forms.get('value')
+    change_data_source(Person, str(value))
+    return "Value changed"
 
 
 #   TEM DE TER ALGUMA PESSOA NA TABELA
@@ -613,10 +649,10 @@ def create():
     checkin = Checkin(31,32 , 33 , "blabla2", 7)
     session.add(checkin)
     session.commit()
-    employee = Employee(40,"trabalhador1", "sapo")
+    employee = Employee(40,"Peter Hogan", "Testing1@mail.com")
     session.add(employee)
     session.commit()
-    employee = Employee(41,"trabalhador2", "sapo2")
+    employee = Employee(41,"Sandra Max", "Testing2@mail.com")
     session.add(employee)
     session.commit()
     employee = Employee(42,"Anna Feng", "test3@mail.com" )
