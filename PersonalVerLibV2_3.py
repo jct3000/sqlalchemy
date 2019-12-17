@@ -300,13 +300,21 @@ def clean_list(value):
         print("\n\n\n\nclean_list: TESTE VALIDADE   %s\n\n\n"%(prazo))
     date=datetime.now().replace(microsecond=0)
 
-    persons=session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).all()
-    results=[]
-    for person in persons:
-        results.append({'id':person.id,'name':person.name,'email':person.email, 'Personal_tag':person.personal_tag,'creation_date':person.created_date.isoformat()})  # data n funciona em jason
+    objects=session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).all()
+    results3={}
+    results4={}
+    n=0
+    for object in objects:
+        n=n+1
+        for key, value  in object.__dict__.items():
+            #print key, value
+            results3.update( {str(key) : str(value)} )
+        results3.pop('_sa_instance_state')
+        results4[object.__tablename__+"_"+str(n)]=results3.copy()
+        #results.append({'id':person.id,'name':person.name,'email':person.email, 'Personal_tag':person.personal_tag,'creation_date':person.created_date.isoformat()})  # data n funciona em jason
     session.commit()
     session.close()
-    return results
+    return results4
 
 
 

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.declarative.api import DeclarativeMeta
 
-from PersonalVerLibV2_2 import *
+from PersonalVerLibV2_3 import *
 
 import sys
 
@@ -296,10 +296,14 @@ print("\n\n\n\n TESTES show_source: %s"%(teste))
 
 
 
-
+print("clean list\n\n")
+p=clean_list(Person)
+print p
 #teste do limpa expired data
 limpa(Person)
-
+print("\nclean list after")
+p=clean_list(Person)
+print p
 # change_goal(Checkin,None)
 # change_categorie(Checkin,None)
 # change_categorie(Person,None)
@@ -430,6 +434,11 @@ print("\n\n--------DESCENDENTES Publico---------")
 print(ordered_find_direct_descend(grafo, 'restaurant'))
 
 showclassdata(Person, 0)
+
+
+
+
+
 #Testes dos modulos etc
 #print(sys.modules["__main__"].__dict__["Person"])
 #inspect.isclass(sys.modules["__main__"].__dict__["Person"])
