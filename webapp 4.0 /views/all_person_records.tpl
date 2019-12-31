@@ -35,6 +35,8 @@ p {
 <!-- Teste de uniformazação para prints-->
 <!-- TENTAR FAZER ARVORE com tabs-->
 <h1>All Records list Page test:</h1>
+
+<!--
 %for key, x in res.iteritems():
   %if key=="person_0":
     <h2>Person Class info:</h2>
@@ -80,6 +82,9 @@ p {
     %end
   %end
 %end
+-->
+
+
 
 
 </ul>
