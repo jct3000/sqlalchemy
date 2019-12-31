@@ -507,6 +507,17 @@ def liscleanperson():
     results6=clean_list(Person)
     return {'Persons Data Expired': results6}
 
+########TESTE#################################################3
+
+@route('/listcleanperson2')   # lista dados pessoais fora de validade
+def liscleanperson2():
+    results6=[]
+    results6=clean_list(Person)
+    print results6
+    return template('clean_list',res=results6)
+
+################################################################
+
 #   TEM DE TER ALGUMA PESSOA NA TABELA
 @route('/showval')   # lista data validade
 def showval():
