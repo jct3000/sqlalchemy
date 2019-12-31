@@ -26,9 +26,9 @@ p {
 <h1>Admin Page:</h1>
 <p>Show all Data :<a href="http://127.0.0.1:8080/showall"> <button> Show all</button> </a></p>
 <h2>List All Expired Data: </h2>
-<p>List Expired Person Data:<a href="http://127.0.0.1:8080/listcleanperson"><button> List</button> </a></p>
 <!--Comentario:teste a mudanca de html de resultados APAGAR-->
-<p>TESTE:<a href="http://127.0.0.1:8080/listcleanperson2"> <button>List</button> </a></p>
+<p>List Expired Person Data(JASON):<a href="http://127.0.0.1:8080/listcleanperson"><button> List</button> </a></p>
+<p>List Expired Person Data:<a href="http://127.0.0.1:8080/listcleanperson2"> <button>List</button> </a></p>
 <h2>Person constrains: </h2>
 <p>Person Expiration Date:<a href="http://127.0.0.1:8080/showval"><button> Show</button> </a></p>
 <p>Person Categorie:<a href="http://127.0.0.1:8080/showcategorie"><button> Show</button> </a></p>

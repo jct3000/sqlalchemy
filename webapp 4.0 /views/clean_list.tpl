@@ -6,6 +6,7 @@
       %for item, seg in x.iteritems():
       <li>{{item}}-> {{seg}}</li>
       <br/>
+      %end
   %end
 </ul>
 </html>

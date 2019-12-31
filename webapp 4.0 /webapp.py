@@ -392,10 +392,20 @@ def showperson(id):
     results5=showclassdata(Person, id)
     return results5#{'Personal Data': results5}#'<h1>Personal Page of id  {0}</h1>'.format(id)
 
+
+
 @route('/show_data_employee/<id>') #test so 41
 def showemploye(id):
     results5=showclassdata(Employee, id)
     return results5#{'Personal Data': results5}#'<h1>Personal Page of id  {0}</h1>'.format(id)
+
+###############################################################################################
+#Using template
+##############################################################################################
+@route('/show_data_person2/<id>') #get???   show de dados pessoais de um id
+def showperson2(id):
+    results5=showclassdata(Person, id)
+    return template('all_person_records',res=results5)
 ####################################################################################################
 
 
