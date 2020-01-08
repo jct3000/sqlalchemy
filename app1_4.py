@@ -28,8 +28,9 @@ class Person (Base, PersonalData):
     email = Column ('email', String, unique=True)
     checkin_p=relationship("Checkin")
 
-    def __repr__(self):
-        return "<Person(name='%s', email='%s')>" % (self.name, self.email)
+    # def __repr__(self):
+    #     return "<Person(id='%s',name='%s', email='%s')>" % (self.id,self.name, self.email)          tirei isto pk do list clean em objectos WHY???
+
 
     def __init__(self, id, name, email):
         #PersonalData.__init__(self)                             #tirar isto daqui????
@@ -296,12 +297,16 @@ print("\n\n\n\n TESTES show_source: %s"%(teste))
 
 
 
-print("clean list\n\n")
+print("\n\n\nclean list\n\n")
 p=clean_list(Person)
+print p
+
+print("\n\n\nclean listOBJECTOS\n\n")
+p=clean_list_obj(Person)
 print p
 #teste do limpa expired data
 limpa(Person)
-print("\nclean list after")
+print("\nclean list after\n\n")
 p=clean_list(Person)
 print p
 # change_goal(Checkin,None)
@@ -436,9 +441,10 @@ print(ordered_find_direct_descend(grafo, 'restaurant'))
 showclassdata(Person, 0)
 
 
-
-
-
+print("showdata obj")
+p=showclassdata_obj(Person, 0)
+print("\n\nshowdata obj second print\n\n")
+print p
 #Testes dos modulos etc
 #print(sys.modules["__main__"].__dict__["Person"])
 #inspect.isclass(sys.modules["__main__"].__dict__["Person"])

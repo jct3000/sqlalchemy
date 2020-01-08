@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,16 +27,5 @@ p {
 
 <ul>
 
-<h1>Clean list Page:</h1>
-  %if len(res)==0:
-  <h2>No Personal data records expired</h2>
-  %end
-  %for key, x in res.iteritems():
-      <h2>{{key}}</h2>
-      %for item, seg in x.iteritems():
-      <li>{{item}}-> {{seg}}</li>
-      <br/>
-      %end
-  %end
-</ul>
-</html>
+<br><h1>Person Class all within expiration date</h1><br>
+<p>Return:<a href="http://127.0.0.1:8080/admin"> Return </a></p>

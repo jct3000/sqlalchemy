@@ -247,11 +247,11 @@ def signinperson():
     return template('person_id_form')
 
 @route('/signinemployee') # log in de empregado
-def signinperson():
+def signinemployee():
     return template('employee_id_form')
 
 @route('/signinrestaurant') # log in de restaurant
-def signinperson():
+def signinrestaurant():
     return template('restaurant_id_form')
 
 
@@ -532,7 +532,7 @@ def liscleanperson2():
 @route('/showval')   # lista data validade
 def showval():
     result=show_val(Person)
-    return "Time constrain of the class person is {0} days".format(result)
+    return template('show_vali',res=result)
 
 #   TEM DE TER ALGUMA PESSOA NA TABELA
 @route('/showgoal')   # lista goal
@@ -571,7 +571,7 @@ def change_val_person():
 def change_val_person():
     value = request.forms.get('value')
     change_val(Person, int(value))
-    return "Value changed"
+    return template('value_changed')
 
 @route('/change_cat_person')#mudanca de categoria
 def change_cat_person():
@@ -619,7 +619,7 @@ def change_data_source_person():
 @route('/cleanperson')   # limpa dados pessoais fora de validade
 def cleanperson():
     limpa(Person) #mudar nome???
-    return '<h1>Person Class all within expiration date</h1>'
+    return template('clean_screen')
 
                                                         #funcao de testes de intro na BD APAGAR
 @route('/create')

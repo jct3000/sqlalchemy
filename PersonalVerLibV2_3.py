@@ -315,8 +315,28 @@ def clean_list(value):
     session.commit()
     session.close()
     return results4
+#################################################################################################
+#CLEAN LIST OBJ
+#
+#description:retorna uma lista de todos os objectosclasse que estao expired
+################################################################################################
+def clean_list_obj(value):
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    for data in session.query(Metatable.validade).filter(Metatable.l_pessoal==value.__tablename__):
+        prazo=data.validade
+        print("\n\n\n\nclean_list: TESTE VALIDADE   %s\n\n\n"%(prazo))
+    date=datetime.now().replace(microsecond=0)
 
-
+    objects=session.query(value).filter((value.created_date)<date-timedelta(days=prazo)).all()
+    list_obj=[]
+    for object in objects:
+        #print object
+        list_obj.append(object)
+        #results.append({'id':person.id,'name':person.name,'email':person.email, 'Personal_tag':person.personal_tag,'creation_date':person.created_date.isoformat()})  # data n funciona em jason
+    session.commit()
+    session.close()
+    return list_obj
 
 
 
@@ -514,9 +534,6 @@ def alerta_vazio():
 
 
 
-#ERROR: so faz um de cada
-
-
 
 
 
@@ -587,8 +604,6 @@ def showclassdata( classe, id_aux, modulo="__main__"):
         aux2=[]
         id_pk=new_id_pk
         print results
-#ERRO se ele pesquisar um classe e nao tiver nada mesmo assim aumenta o n exemplo devia ser grade_0 mas e grade_1
-#tentar ordenar
 
     ##debugg#########
     # print descendentes[t].capitalize()
@@ -606,14 +621,6 @@ def showclassdata( classe, id_aux, modulo="__main__"):
     # print results2["grade_1"]
         ############
     ####################
-
-
-
-
-
-
-
-
 
     # aux=[]
     #
@@ -634,6 +641,79 @@ def showclassdata( classe, id_aux, modulo="__main__"):
 
 
 
+
+#################################################################################################
+#SHOW PRIVATE OBJ DATA GIVEN CLASS AND ID
+#
+#description: recebe uma classe e um id e devolve os dados desse objecto e dos objectos das classes descendem diretamente (lista de objectos)
+#obj_list- tem os objectos separados, obj_list2, tem so a lista de objectos
+################################################################################################
+
+
+
+
+
+
+def showclassdata_obj( classe, id_aux, modulo="__main__"):
+    print('\n\n\n---------------')
+    print("showclassdata_OBJ")
+    Session = sessionmaker(bind=engine)
+    session= Session()
+    #1 saber a primary key da 1 classe
+    id_pk=inspect(classe).primary_key[0].name
+    results={}
+    obj_list=[]
+    obj_list2=[]
+    n=0
+    ##debugg######
+    # print id_pk
+    # print type(id_pk)
+    # print(sys.modules[modulo].__dict__["Person"])
+    ##################
+    #2guardar resultados da 1 pesquisa
+    objects = session.query(classe).filter(classe.__dict__[id_pk]==id_aux)   #nao pode ser classe.id tem de ver a pk e e essa classe.id_pk mas isso n da
+    for object in objects:
+        obj_list.append(object)
+        obj_list2.append(object)
+    print obj_list
+    results[object.__tablename__+"_"+str(n)]=obj_list
+    obj_list=[]
+    ####################
+    #3guarda a chaves primarias e a classe correspondente
+    keys={}
+    keys[classe.__tablename__+"_"+str(n)]={id_pk : id_aux}
+
+    #4 ve os descendentes e guarda
+    descendentes=[]
+    descendentes=ordered_find_direct_descend(grafo,classe.__tablename__)
+    #5 apaga o pai
+    if len(descendentes)>1:
+        del descendentes[1]
+    aux=[]
+    aux2=[]
+    aux.append(id_aux)
+    for t in descendentes:
+        n=0
+        for x in aux:
+            objects = session.query(sys.modules[modulo].__dict__[descendentes[t].capitalize()]).filter(sys.modules[modulo].__dict__[descendentes[t].capitalize()].__dict__[id_pk]==x)   #nao pode ser classe.id tem de ver a pk e e essa classe.id_pk mas isso n da
+            new_id_pk=inspect(sys.modules[modulo].__dict__[descendentes[t].capitalize()]).primary_key[0].name
+            for object in objects:
+                keys[object.__tablename__+"_"+str(n)]={new_id_pk : object.__dict__[new_id_pk]}
+                aux2.append(object.__dict__[new_id_pk])
+                obj_list.append(object)
+                obj_list2.append(object)
+            results[object.__tablename__+"_"+str(n)]=obj_list
+            obj_list=[]
+            n=n+1
+        aux=[]
+        aux=aux2
+        aux2=[]
+        id_pk=new_id_pk
+        print results
+        print("\ntest obj list\n")
+        print obj_list2
+    session.close()
+    return results
 
 
 
